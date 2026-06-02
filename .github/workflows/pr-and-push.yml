@@ -1,11 +1,11 @@
 name: Pull Request and Push Action
 
 on:
-  pull_request:  # Safer than pull_request_target for untrusted code
-    branches: [ main ]
+  pull_request:
+    branches: [ main, 'base-*' ]
     types: [opened, synchronize, reopened, ready_for_review]
   push:
-    branches: [ main ]  # Also run on direct pushes to main
+    branches: [ main ]
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -28,13 +28,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
       with:
-        fetch-depth: 0  # We the need the full Git history.
+        fetch-depth: 0
     - name: Setup uv
       uses: astral-sh/setup-uv@v7
     - name: Check API breaking changes
       run: |
-        if ! uvx griffe check --search src --format github strands --against "main"; then
+        BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+        if ! uvx griffe check --search src --format github strands --against "$BASE_BRANCH"; then
           echo "Potential API changes detected (review if actually breaking)"
           exit 1
         fi
-
