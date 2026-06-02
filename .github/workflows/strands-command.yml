@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Collaborator Check
         if: github.event_name != 'workflow_dispatch'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         id: collab-check
         with:
           result-encoding: string
@@ -58,7 +58,7 @@ jobs:
       - name: Auto-approve for workflow dispatch
         if: github.event_name == 'workflow_dispatch'
         id: auto-approve
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           result-encoding: string
           script: |
@@ -79,7 +79,7 @@ jobs:
       prompt: ${{ steps.process.outputs.prompt }}
     steps:
       - name: Add strands-running label
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -99,7 +99,7 @@ jobs:
       # Outputs: branch_name, session_id, system_prompt, prompt
       - name: Process input
         id: process
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const processInput = require('./.github/scripts/javascript/process-input.cjs');
@@ -169,7 +169,7 @@ jobs:
     runs-on: ubuntu-latest 
     steps:
       - name: Remove strands-running label
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             try {
