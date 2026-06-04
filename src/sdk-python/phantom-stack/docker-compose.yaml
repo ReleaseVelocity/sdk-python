@@ -1,0 +1,12 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:latest
+    container_name: strands-sdk-python
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      # Default region so boto3/moto-based tests have sane defaults.
+      AWS_DEFAULT_REGION: us-west-2
