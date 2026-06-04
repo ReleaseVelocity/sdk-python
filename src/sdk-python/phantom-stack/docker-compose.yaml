@@ -1,0 +1,19 @@
+services:
+  sdk-python:
+    image: sdk-python:latest
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    container_name: sdk-python
+    environment:
+      LOG_LEVEL: DEBUG
+    working_dir: /app
+    volumes:
+      # Live-edit support: editable install picks up changes to src immediately.
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
+      - ../pyproject.toml:/app/pyproject.toml
+    command: ["sleep", "infinity"]
