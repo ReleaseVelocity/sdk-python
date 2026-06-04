@@ -14,3 +14,9 @@ repl_state
 .kiro
 uv.lock
 .audio_cache
+
+# Guard against accidentally committing a nested clone of this repo
+# (e.g. `git clone` run inside the workspace). A nested copy at
+# src/sdk-python/ shadows the real src/strands/ package and makes
+# `mypy ./src` fail with a "Duplicate module named 'strands'" error.
+/src/sdk-python/
