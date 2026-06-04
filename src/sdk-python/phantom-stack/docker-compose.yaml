@@ -1,0 +1,15 @@
+# Strands Agents SDK (Python) – development container.
+# Pure library with an extensive test suite; no external services required.
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    environment:
+      # moto-based unit tests rely on dummy AWS creds; provide sane defaults.
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    working_dir: /app
+    command: ["sleep", "infinity"]

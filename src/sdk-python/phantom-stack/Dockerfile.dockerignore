@@ -1,0 +1,15 @@
+# Exclude the recursive/duplicated source copy that is not part of the package
+src/sdk-python/
+
+# VCS / caches / build artifacts
+.git/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+build/
+dist/
+.venv/
+phantom-stack/
