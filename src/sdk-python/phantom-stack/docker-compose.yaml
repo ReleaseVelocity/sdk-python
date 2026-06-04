@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python
+    environment:
+      # Dummy AWS creds so tests using moto / boto3 have a default region.
+      - AWS_DEFAULT_REGION=us-west-2
+      - SETUPTOOLS_SCM_PRETEND_VERSION=1.0.0
+    working_dir: /app
+    command: ["sleep", "infinity"]
