@@ -1,0 +1,13 @@
+# Exclude the nested duplicate source tree and VCS/cache artifacts from the
+# build context to keep the image small and the build fast.
+src/sdk-python
+phantom-stack
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
