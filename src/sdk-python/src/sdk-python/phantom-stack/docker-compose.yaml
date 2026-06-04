@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    container_name: sdk-python
+    working_dir: /app
+    environment:
+      HATCH_VCS_PRETEND_VERSION: "0.0.0+dev"
+      # Default AWS region so boto3-based tests don't fail on region lookup.
+      AWS_DEFAULT_REGION: "us-east-1"
+    command: ["sleep", "infinity"]
