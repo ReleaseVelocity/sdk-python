@@ -1,0 +1,10 @@
+# Build context exclusions for the phantom-stack image build.
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+phantom-stack/
