@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    image: app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PKG_VERSION: "0.0.0"
+    container_name: strands-sdk-python
+    environment:
+      # Default AWS creds so moto-backed tests have a stable environment.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+      LOG_LEVEL: "INFO"
+    command: ["sleep", "infinity"]
