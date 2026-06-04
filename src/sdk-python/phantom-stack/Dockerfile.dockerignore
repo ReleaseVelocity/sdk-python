@@ -1,0 +1,18 @@
+# Exclude the recursive self-referential directory artifact
+src/sdk-python
+
+# VCS / caches / build artifacts
+.git
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+build
+dist
+.venv
+.env
+
+# The phantom-stack dir itself (don't copy our docker files into the image)
+phantom-stack
