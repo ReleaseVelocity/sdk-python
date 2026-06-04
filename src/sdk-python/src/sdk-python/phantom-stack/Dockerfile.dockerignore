@@ -1,0 +1,10 @@
+# Exclude the duplicated nested project copy and noise from the build context.
+src/sdk-python
+phantom-stack
+.git
+**/__pycache__
+**/*.pyc
+build
+.pytest_cache
+.ruff_cache
+.mypy_cache
