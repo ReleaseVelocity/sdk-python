@@ -1,0 +1,8 @@
+# Override exclusions: ensure everything needed at runtime is included.
+**/__pycache__
+**/*.pyc
+.git
+build
+dist
+*.egg-info
+phantom-stack
