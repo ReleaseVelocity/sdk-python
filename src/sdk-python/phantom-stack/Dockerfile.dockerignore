@@ -1,0 +1,13 @@
+# Build context hygiene. The Dockerfile lives in phantom-stack/ but the build
+# context is the project root (see docker-compose.yaml). Exclude noise and the
+# nested duplicate source tree that hatch does not package.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+src/sdk-python
