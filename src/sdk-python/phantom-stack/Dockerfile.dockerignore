@@ -1,0 +1,15 @@
+# Exclude the self-referential symlink to avoid recursive copy
+src/sdk-python
+sdk-python/sdk-python
+
+# Caches and build artifacts
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
