@@ -1,0 +1,12 @@
+# Override of project exclusions for the dev container build.
+# Exclude the nested project copy to avoid duplicate package trees.
+src/sdk-python
+phantom-stack
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
