@@ -1,0 +1,12 @@
+services:
+  sdk:
+    image: app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PKG_VERSION: "0.0.0"
+      network: host
+    container_name: strands-sdk-python
+    working_dir: /app
+    command: ["sleep", "infinity"]
