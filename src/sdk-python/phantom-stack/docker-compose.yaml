@@ -1,0 +1,15 @@
+services:
+  sdk:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      # AWS creds are not needed for unit tests (moto mocks them) but provide
+      # harmless defaults so boto3 does not error on import-time region lookups.
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: testing
+      AWS_SECRET_ACCESS_KEY: testing
