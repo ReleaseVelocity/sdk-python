@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python-app
+    container_name: sdk-python
+    environment:
+      # Dummy AWS creds so boto3/moto-based tests have a default region/identity.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      LOG_LEVEL: INFO
+    working_dir: /app
+    command: ["sleep", "infinity"]
