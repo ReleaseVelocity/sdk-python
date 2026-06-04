@@ -1,0 +1,11 @@
+# Build-context excludes for the phantom-stack image build.
+# Keeps the context small/fast without touching the project's own ignore rules.
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+.venv
+.coverage*
