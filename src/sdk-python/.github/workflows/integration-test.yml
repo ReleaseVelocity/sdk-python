@@ -9,11 +9,21 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret 'STRANDS_INTEG_TEST_ROLE' is not configured for the 'manual-approval' environment (or repository). Please configure it with the IAM role ARN before running integration tests."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
