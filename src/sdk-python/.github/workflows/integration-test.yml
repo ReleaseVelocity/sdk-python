@@ -14,6 +14,18 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Check secret availability
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is not available in this run."
+            echo "::error::This typically happens for Dependabot or fork pull requests, where repository secrets are not exposed to 'pull_request_target' runs by default."
+            echo "::error::To run integration tests for these PRs, configure STRANDS_INTEG_TEST_ROLE as a Dependabot secret (Settings -> Secrets and variables -> Dependabot) or move it into a GitHub Environment gated by manual approval."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE is available; proceeding with credential configuration."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
