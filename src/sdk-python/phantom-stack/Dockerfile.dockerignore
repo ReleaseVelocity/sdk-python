@@ -1,0 +1,12 @@
+# Build context hygiene (placed in phantom-stack; the project ships no .dockerignore).
+# Speeds up `COPY . .` by skipping caches and virtualenvs.
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.coverage*
+**/.venv
+**/build
+**/dist
+**/.git
