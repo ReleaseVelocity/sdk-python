@@ -8,6 +8,11 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Dependabot PRs do not have access to the STRANDS_INTEG_TEST_ROLE secret
+    # (repo secrets are not propagated to Dependabot PR contexts), so the
+    # configure-aws-credentials step would always fail with empty credentials.
+    # Skip explicitly so the failure mode is "skipped" rather than a red run.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
