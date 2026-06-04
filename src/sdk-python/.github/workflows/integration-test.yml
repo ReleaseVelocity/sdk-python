@@ -14,6 +14,21 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::The 'STRANDS_INTEG_TEST_ROLE' secret is not available to this workflow run."
+            echo "::error::This typically means the run was triggered from a context that cannot access repository Actions secrets, such as a Dependabot pull request or a fork PR."
+            echo "::error::Remediation:"
+            echo "::error::  - For Dependabot PRs: add the role ARN as a Dependabot secret at Settings -> Secrets and variables -> Dependabot -> New repository secret 'STRANDS_INTEG_TEST_ROLE'."
+            echo "::error::  - For fork PRs: ensure the workflow is invoked via 'pull_request_target' (it is) and that the secret is not scoped to an environment that this job does not reference."
+            echo "::error::  - Otherwise, confirm the secret exists at the repository or organization level and is visible to this repository."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE secret is present; proceeding to configure AWS credentials."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
