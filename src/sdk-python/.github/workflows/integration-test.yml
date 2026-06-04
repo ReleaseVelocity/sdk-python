@@ -14,6 +14,17 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Validate required secrets
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is empty or missing."
+            echo "::error::This usually means the workflow was triggered in a context that does not have access to repository secrets (e.g. a Dependabot-origin pull_request_target run)."
+            echo "::error::Populate STRANDS_INTEG_TEST_ROLE under Settings -> Secrets and variables (Actions and, if applicable, Dependabot) with a valid IAM role ARN of the form arn:aws:iam::<account-id>:role/<role-name>."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
