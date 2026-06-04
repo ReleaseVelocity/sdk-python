@@ -1,0 +1,10 @@
+# Build context cleanup (does not modify the project's own .dockerignore)
+**/.venv
+**/__pycache__
+**/*.pyc
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+phantom-stack/
