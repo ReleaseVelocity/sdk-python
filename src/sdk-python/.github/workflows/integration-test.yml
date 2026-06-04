@@ -14,6 +14,19 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is empty or not available to this run."
+            echo "This typically happens when a workflow is triggered by pull_request_target from a forked PR"
+            echo "before maintainer approval, or when the secret has been removed/renamed at the repo or"
+            echo "environment level. Without a role ARN, aws-actions/configure-aws-credentials cannot assume"
+            echo "the integration test role via OIDC. Failing fast instead of retrying credential loading."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
