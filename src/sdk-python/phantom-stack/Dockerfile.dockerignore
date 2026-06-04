@@ -1,0 +1,13 @@
+# Build-context ignore for the phantom-stack build (context is project root).
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+# Nested duplicate copy of the project tree; not needed for build/tests.
+src/sdk-python
+phantom-stack
