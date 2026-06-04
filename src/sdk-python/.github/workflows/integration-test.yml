@@ -9,11 +9,18 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Validate required secrets
+        run: |
+          if [ -z "${{ secrets.STRANDS_INTEG_TEST_ROLE }}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is not set or is empty. Ensure it is configured on the 'manual-approval' environment (Settings → Environments → manual-approval → Environment secrets) and that this job declares 'environment: manual-approval'."
+            exit 1
+          fi
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
