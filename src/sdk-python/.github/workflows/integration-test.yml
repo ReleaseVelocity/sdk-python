@@ -9,6 +9,20 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip integration tests for PRs that cannot access repository secrets:
+    #   1. Fork-originated `pull_request_target` runs (head.repo != base repo).
+    #   2. Dependabot PRs — GitHub does not expose regular repository secrets to
+    #      Dependabot-triggered workflows; only Dependabot secrets are available.
+    # Without `secrets.STRANDS_INTEG_TEST_ROLE`, the
+    # `aws-actions/configure-aws-credentials` step resolves to an empty
+    # `role-to-assume` and fails deterministically with
+    # "Could not load credentials from any providers". `merge_group` events
+    # (which always run from the base repo with full secret access) are allowed.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]')
     permissions:
       id-token: write
       pull-requests: read
