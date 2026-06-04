@@ -1,0 +1,17 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        STRANDS_VERSION: "0.0.0"
+    image: strands-sdk-python:dev
+    environment:
+      # Default region/dummy creds so AWS SDK clients can initialize in tests.
+      AWS_DEFAULT_REGION: "us-west-2"
+      LOG_LEVEL: "INFO"
+    working_dir: /app
+    command: ["tail", "-f", "/dev/null"]
+    stdin_open: true
+    tty: true
