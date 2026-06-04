@@ -1,0 +1,22 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+      args:
+        PKG_VERSION: "0.0.0"
+    image: sdk-python:dev
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      # Dummy AWS creds so boto3-backed tests/imports never block on real creds.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    volumes:
+      # Live-mount the source for development; package is installed editable.
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
