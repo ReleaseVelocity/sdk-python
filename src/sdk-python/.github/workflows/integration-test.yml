@@ -9,11 +9,34 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip the job for Dependabot-originated pull_request_target events and
+    # for PRs from forked repositories. Dependabot PRs read secrets from the
+    # `secrets.dependabot` scope rather than `secrets.*`, so
+    # `secrets.STRANDS_INTEG_TEST_ROLE` resolves to an empty string for them
+    # and the AWS credentials step fails after 12 retries with
+    # "Could not load credentials from any providers". Skipping cleanly
+    # avoids that failure (Dependabot dependency-bump PRs do not need to run
+    # privileged AWS integration tests).
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not available in this workflow context."
+            echo "::error::This typically happens for Dependabot or forked-PR runs. Configure the secret under Settings -> Secrets and variables -> Actions (and Dependabot, if applicable), or skip this workflow for those triggers."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
