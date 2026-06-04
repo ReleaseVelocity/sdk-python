@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    environment:
+      # Dummy AWS creds so boto3/moto-based tests have a stable environment.
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-west-2
+      HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    working_dir: /app
+    command: ["sleep", "infinity"]
