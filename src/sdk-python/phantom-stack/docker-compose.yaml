@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: app
+    container_name: sdk-python
+    environment:
+      # Provide deterministic version for hatch-vcs at runtime/import.
+      - SETUPTOOLS_SCM_PRETEND_VERSION=1.0.0
+      # Test fixtures (moto) expect AWS creds present in the environment.
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-west-2
+    command: ["sleep", "infinity"]
