@@ -9,11 +9,30 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # The integration test role ARN is stored as a secret on the
+    # `manual-approval` GitHub environment so that fork-PR runs (via
+    # pull_request_target) cannot access it without maintainer approval.
+    # Without this `environment:` declaration the secret resolves to an
+    # empty string at runtime, causing aws-actions/configure-aws-credentials
+    # to retry 12 times and fail with "Could not load credentials from any
+    # providers".
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE is empty. The secret was not injected for this trigger context."
+            echo "::error::Confirm the secret is defined on the 'manual-approval' GitHub environment and that this job declares 'environment: manual-approval'."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE secret is present (value masked)."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
