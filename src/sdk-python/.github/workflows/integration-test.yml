@@ -14,6 +14,19 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integ-test role secret is configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is empty or not exposed to this workflow run."
+            echo "::error::This typically happens when the workflow is triggered from a fork or Dependabot PR,"
+            echo "::error::where repository secrets are not exposed by default. A maintainer must re-run this"
+            echo "::error::workflow from a trusted context, or configure the secret under Settings → Secrets and"
+            echo "::error::variables → Actions (and/or Dependabot) so it is available to this run."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
