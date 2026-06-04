@@ -204,7 +204,7 @@ warn_no_return = true
 warn_unreachable = true
 follow_untyped_imports = true
 ignore_missing_imports = false
-exclude = ["src/strands/experimental/bidi"]
+exclude = ["src/strands/experimental/bidi", "src/sdk-python"]
 
 [[tool.mypy.overrides]]
 module = ["strands.experimental.bidi.*"]
