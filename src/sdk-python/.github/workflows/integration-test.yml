@@ -14,6 +14,19 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set."
+            echo "::error::Define it at Repository Settings -> Secrets and variables -> Actions,"
+            echo "::error::or, if it lives in a GitHub Environment, add 'environment: <env-name>'"
+            echo "::error::to this job so the secret is injected. Failing fast to avoid the"
+            echo "::error::~90s AWS credential-retry storm."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
