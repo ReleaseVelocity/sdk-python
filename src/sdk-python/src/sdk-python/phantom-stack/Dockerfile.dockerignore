@@ -1,0 +1,14 @@
+# Build context exclusions for the phantom-stack image build.
+# Keeps the context small and avoids copying local caches/artifacts.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+.audio_cache
+phantom-stack
