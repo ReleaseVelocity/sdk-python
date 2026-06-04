@@ -14,6 +14,21 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is empty or not available to this run."
+            echo "::error::This is typically caused by one of the following:"
+            echo "::error::  1. The secret is not defined at the repository or organization level."
+            echo "::error::  2. The run was triggered by Dependabot via pull_request_target; Dependabot uses a separate secret store (Settings -> Secrets and variables -> Dependabot)."
+            echo "::error::  3. The secret is defined under a GitHub Environment, but this job has no 'environment:' binding."
+            echo "::error::Fix: ensure STRANDS_INTEG_TEST_ROLE is set as a repo/org Actions secret (full IAM role ARN). For Dependabot PRs, also add it under Settings -> Secrets and variables -> Dependabot."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE is present (value masked)."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
