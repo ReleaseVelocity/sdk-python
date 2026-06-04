@@ -1,0 +1,12 @@
+# Override path for the project (project has no .dockerignore of its own).
+# Exclude a nested duplicate copy of the repo and caches to keep context lean.
+src/sdk-python/
+**/__pycache__/
+**/*.pyc
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+phantom-stack/
