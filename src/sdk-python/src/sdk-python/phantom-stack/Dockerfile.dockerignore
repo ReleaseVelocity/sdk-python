@@ -1,0 +1,8 @@
+# Exclude the duplicated nested project copy and the build dir from context
+src/sdk-python
+phantom-stack
+**/__pycache__
+**/*.pyc
+.git
+build
+dist
