@@ -8,12 +8,37 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip this job for Dependabot-originated PRs. GitHub strips regular
+    # repository secrets (including STRANDS_INTEG_TEST_ROLE) from runs whose
+    # actor is dependabot[bot], which causes the configure-aws-credentials
+    # step below to receive an empty role-to-assume input and fall through to
+    # the default credential provider chain, retrying 12x before failing with
+    # "Could not load credentials from any providers". To re-enable AWS
+    # integration tests for Dependabot PRs, add the required secrets under
+    # Settings → Secrets and variables → Actions → Dependabot secrets.
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        # Fail fast with a clear message if the integ-test role secret is not
+        # available in this run's context (e.g. fork PR or Dependabot run with
+        # missing Dependabot secret), rather than letting
+        # configure-aws-credentials retry for ~2 minutes before erroring.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty in this run's context. \
+          This typically means the workflow was triggered in a context where repository secrets \
+          are not exposed (e.g. a Dependabot PR or a fork PR without environment approval). \
+          Configure the secret under Settings → Secrets and variables → Actions (and Dependabot \
+          secrets if applicable) to run integration tests."
+            exit 1
+          fi
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
