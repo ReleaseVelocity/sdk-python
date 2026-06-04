@@ -1,0 +1,14 @@
+# Build-context excludes. Keep context lean.
+**/.git
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+**/build
+**/dist
+# The project contains a recursive self-copy under src/sdk-python which would
+# bloat the context and is not part of the importable package.
+src/sdk-python
+phantom-stack
