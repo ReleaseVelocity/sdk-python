@@ -8,12 +8,44 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip Dependabot-triggered runs: GitHub strips repository Actions secrets
+    # (including STRANDS_INTEG_TEST_ROLE) and downgrades the GITHUB_TOKEN
+    # permissions for pull_request_target events initiated by dependabot[bot],
+    # which causes aws-actions/configure-aws-credentials to fail with
+    # "Could not load credentials from any providers" after exhausting all
+    # 12 OIDC retries (~2 minutes of wasted runner time).
+    if: >-
+      github.actor != 'dependabot[bot]' &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integ test role secret is configured
+        # Fail fast with a clear, actionable error if the integ test role
+        # secret is unavailable (e.g. fork PR, missing repo configuration).
+        # Without this guard, aws-actions/configure-aws-credentials silently
+        # falls through to the default provider chain, retries 12 times,
+        # and emits the opaque error
+        # "Could not load credentials from any providers".
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty or unset."
+            echo "::error::This usually means the workflow was triggered in a"
+            echo "::error::context where repository Actions secrets are not"
+            echo "::error::available (e.g. a pull_request_target from a fork),"
+            echo "::error::or the secret has not been provisioned. Configure"
+            echo "::error::the secret under Settings > Secrets and variables"
+            echo "::error::> Actions, and verify the IAM role's trust policy"
+            echo "::error::permits the GitHub OIDC provider for this repo."
+            exit 1
+          fi
+          echo "Integ test role secret is configured."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
