@@ -1,0 +1,9 @@
+# Keep the build context lean; we add back what we need via COPY.
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+build
+dist
+*.bak
