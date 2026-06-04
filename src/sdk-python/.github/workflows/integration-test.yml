@@ -9,11 +9,35 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Bind the job to the `manual-approval` environment so it can read
+    # environment-scoped secrets (notably `STRANDS_INTEG_TEST_ROLE`). Without
+    # this, the secret reference resolves to an empty string at runtime and
+    # `aws-actions/configure-aws-credentials` falls through to default
+    # credential discovery, fails to find credentials on the hosted runner,
+    # and exits after retrying.
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      # Fail fast with a clear, actionable error if the IAM role secret is
+      # missing or empty in the current trigger context (e.g. dependabot/fork
+      # PRs that are not allowed to read repo/environment secrets). Without
+      # this guard, the failure manifests as an opaque "Could not load
+      # credentials from any providers" after ~107s of action-internal
+      # retries.
+      - name: Verify required secrets
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is empty or not exposed to this run."
+            echo "::error::Verify the secret is defined on the 'manual-approval' environment (or as a repository secret)."
+            echo "::error::For dependabot/fork pull_request_target runs, confirm GitHub is configured to expose the secret to this trigger context."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
