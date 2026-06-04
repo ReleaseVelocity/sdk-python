@@ -1,0 +1,12 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:latest
+    container_name: strands-sdk-python
+    environment:
+      # Defaults used by the moto-based test suite; override as needed.
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    command: ["sleep", "infinity"]
