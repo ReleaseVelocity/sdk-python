@@ -1,0 +1,12 @@
+# Override the project's .dockerignore (none exists, but ensure nothing we need is excluded)
+# Exclude only heavy/irrelevant artifacts to keep the build context small.
+**/.git
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.venv
+**/build
+**/dist
+**/*.pyc
+phantom-stack
