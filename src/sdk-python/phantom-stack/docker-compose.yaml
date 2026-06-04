@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: sdk-python
+    image: sdk-python:dev
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      - HATCH_VCS_PRETEND_VERSION=0.0.0
+      # Dummy AWS creds so boto3-based tests/imports don't hit credential lookup
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=testing
+      - AWS_SECRET_ACCESS_KEY=testing
