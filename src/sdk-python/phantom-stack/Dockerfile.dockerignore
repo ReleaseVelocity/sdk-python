@@ -1,0 +1,14 @@
+# Keep the build context lean. Source needed for the editable install
+# (src/, tests/, tests_integ/, pyproject.toml, README.md) is copied explicitly.
+.git
+.github
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+*.egg-info
+docs
+phantom-stack
