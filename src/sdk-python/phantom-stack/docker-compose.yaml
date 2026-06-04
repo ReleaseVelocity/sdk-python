@@ -1,0 +1,19 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+      args:
+        PRETEND_VERSION: "0.0.0"
+    container_name: strands-sdk-python
+    environment:
+      # setuptools-scm version fallback (no .git present)
+      SETUPTOOLS_SCM_PRETEND_VERSION_FOR_STRANDS_AGENTS: "0.0.0"
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Avoid AWS credential lookups hanging during tests
+      AWS_DEFAULT_REGION: "us-east-1"
+      AWS_ACCESS_KEY_ID: "testing"
+      AWS_SECRET_ACCESS_KEY: "testing"
+    working_dir: /app
+    command: sleep infinity
