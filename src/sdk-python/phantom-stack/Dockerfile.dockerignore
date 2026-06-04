@@ -1,0 +1,15 @@
+# Exclude the duplicated nested project tree that would otherwise bloat the
+# build context and shadow the real package layout.
+src/sdk-python/
+
+# Caches and build artifacts
+**/__pycache__/
+**/*.pyc
+.git/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+build/
+dist/
+phantom-stack/
