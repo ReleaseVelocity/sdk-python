@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    environment:
+      # Pretend version so hatch-vcs/setuptools_scm doesn't require git tags.
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Dummy AWS creds/region so boto3-backed tests (with moto) run cleanly.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    working_dir: /app
+    command: ["sleep", "infinity"]
