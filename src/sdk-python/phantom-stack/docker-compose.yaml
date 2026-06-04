@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python-dev
+    container_name: sdk-python-dev
+    working_dir: /app
+    environment:
+      - AWS_DEFAULT_REGION=us-west-2
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    command: ["sleep", "infinity"]
