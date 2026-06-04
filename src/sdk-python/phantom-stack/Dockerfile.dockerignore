@@ -1,0 +1,12 @@
+# Exclude caches and build artifacts; keep everything else for dev use.
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
+# Exclude the duplicated nested copy of the tree (not the real package).
+src/sdk-python
