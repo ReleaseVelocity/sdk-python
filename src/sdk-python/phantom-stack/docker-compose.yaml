@@ -1,0 +1,18 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    environment:
+      # Dummy AWS creds so boto3/moto-based tests have something to read.
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    volumes:
+      # Live-mount the project so developers can edit and re-run tests.
+      - ..:/app
+    working_dir: /app
+    command: ["sleep", "infinity"]
