@@ -1,0 +1,8 @@
+# Build context exclusions for phantom-stack. Keep src/, tests/, tests_integ/,
+# pyproject.toml, README.md (all needed for install + tests).
+**/__pycache__
+**/*.pyc
+.pytest_cache
+build/
+dist/
+*.egg-info
