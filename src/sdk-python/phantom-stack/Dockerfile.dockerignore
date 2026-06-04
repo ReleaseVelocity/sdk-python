@@ -1,0 +1,14 @@
+# Build-context excludes for the containerization build (does not affect the project's own ignores).
+# We intentionally keep the source tree, tests/, and pyproject.toml.
+**/__pycache__
+**/*.pyc
+.venv
+venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+.git
+phantom-stack
