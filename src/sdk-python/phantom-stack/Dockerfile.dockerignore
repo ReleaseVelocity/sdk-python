@@ -1,0 +1,13 @@
+# Build context is the project root. Exclude heavy/unneeded artifacts.
+.git
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+.audio_cache
+phantom-stack
