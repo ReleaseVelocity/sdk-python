@@ -14,6 +14,18 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Check integration test secret availability
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "STRANDS_INTEG_TEST_ROLE is not available in this context."
+            echo "This is expected for Dependabot-triggered pull_request_target runs,"
+            echo "which do not receive standard repository Actions secrets."
+            echo "Skipping integration tests with neutral exit code."
+            exit 78
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
