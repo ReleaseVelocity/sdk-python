@@ -1,0 +1,20 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    working_dir: /app
+    environment:
+      # AWS test creds so any boto3/moto-backed code paths have defaults.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    volumes:
+      # Live-mount the source so edits are reflected in the editable install.
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
+      - ../pyproject.toml:/app/pyproject.toml
+    command: ["sleep", "infinity"]
