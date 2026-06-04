@@ -1,0 +1,11 @@
+# Exclude the recursive nested duplicate of the project to keep context small.
+src/sdk-python
+# Exclude our own docker tooling from the build context.
+phantom-stack
+# Common noise
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
