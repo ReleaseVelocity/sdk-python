@@ -9,6 +9,22 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip this job when secrets are not available in the run's context.
+    # GitHub does not expose Actions secrets to runs triggered by Dependabot
+    # or to pull_request_target runs whose head ref lives in a forked
+    # repository. Without secrets, ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+    # resolves to the empty string and `aws-actions/configure-aws-credentials`
+    # fails with a misleading "Could not load credentials from any providers"
+    # error after exhausting all retries. Skipping is the correct outcome:
+    # such PRs cannot run the AWS-backed integration suite anyway, and
+    # maintainers can re-run the suite from a trusted branch / merge_group.
+    # `merge_group` events always run in the base repository context and
+    # therefore have access to secrets.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+        github.actor != 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       id-token: write
       pull-requests: read
