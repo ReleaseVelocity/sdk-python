@@ -1,0 +1,11 @@
+# The repo contains a nested duplicate copy at src/sdk-python that is not needed.
+src/sdk-python
+phantom-stack
+.git
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
