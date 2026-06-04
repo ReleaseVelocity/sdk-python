@@ -14,6 +14,34 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify trigger context and secret availability
+        # Fail fast (in ~1s instead of ~85s of STS retries) when the integ-test
+        # role secret is unavailable. Secrets are intentionally withheld on
+        # `pull_request_target` runs originating from forks or Dependabot, and
+        # an empty `role-to-assume` makes `configure-aws-credentials` exhaust
+        # all 12 retries with an opaque "Could not load credentials" error.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "${EVENT_NAME}" = "pull_request_target" ]; then
+            if [ -n "${PR_HEAD_REPO}" ] && [ "${PR_HEAD_REPO}" != "${BASE_REPO}" ]; then
+              echo "::error::Integration tests cannot run for PRs from forks (head repo: ${PR_HEAD_REPO}). A maintainer must run them from a branch in ${BASE_REPO}."
+              exit 1
+            fi
+            if [ "${ACTOR}" = "dependabot[bot]" ]; then
+              echo "::error::Integration tests cannot run for Dependabot PRs because secrets are not exposed to bot-triggered pull_request_target runs. A maintainer must re-trigger the run from a non-Dependabot branch."
+              exit 1
+            fi
+          fi
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is unavailable for this trigger context. Verify the secret exists and is accessible to event '${EVENT_NAME}' from actor '${ACTOR}'."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
