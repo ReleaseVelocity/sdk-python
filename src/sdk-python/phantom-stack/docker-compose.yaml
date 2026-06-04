@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    image: app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PROJECT_VERSION: ${PROJECT_VERSION:-0.1.0.dev0}
+    container_name: strands-sdk-python
+    environment:
+      HATCH_VCS_PRETEND_VERSION: ${PROJECT_VERSION:-0.1.0.dev0}
+    working_dir: /app
+    command: sleep infinity
