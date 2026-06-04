@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PKG_VERSION: "0.0.0"
+    image: sdk-python:dev
+    environment:
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    working_dir: /app
+    # Keep the container alive so developers can exec in and run tests/linters.
+    command: ["tail", "-f", "/dev/null"]
