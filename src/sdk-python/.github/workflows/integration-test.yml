@@ -8,6 +8,12 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip for Dependabot PRs: GitHub does not expose regular Actions secrets to
+    # Dependabot-triggered events, so `secrets.STRANDS_INTEG_TEST_ROLE` resolves
+    # to empty and the `aws-actions/configure-aws-credentials` step fails. If
+    # Dependabot integration tests are needed in the future, mirror the secret
+    # under Settings -> Secrets and variables -> Dependabot and remove this guard.
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
