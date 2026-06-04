@@ -1,0 +1,19 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    working_dir: /app
+    # Mount the project source for live development (editable install picks up changes).
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
+    environment:
+      # Provide dummy AWS creds so boto3-backed code/tests can import cleanly.
+      AWS_DEFAULT_REGION: us-west-2
+      HATCH_VCS_PRETEND_VERSION: 0.0.0+dev
+    # Keep the container alive so developers can exec in and run tests/linters.
+    command: ["sleep", "infinity"]
