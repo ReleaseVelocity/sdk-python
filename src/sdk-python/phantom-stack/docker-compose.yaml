@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    working_dir: /app
+    environment:
+      # Provide deterministic AWS creds/region so boto3-based tests that don't
+      # use moto fixtures still import cleanly.
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    command: ["sleep", "infinity"]
