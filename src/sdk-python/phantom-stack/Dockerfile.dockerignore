@@ -1,0 +1,11 @@
+# Keep build context lean. We intentionally include src/, tests/, tests_integ/,
+# pyproject.toml and README.md (needed for the editable install).
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+build/
+dist/
+*.egg-info
+phantom-stack
