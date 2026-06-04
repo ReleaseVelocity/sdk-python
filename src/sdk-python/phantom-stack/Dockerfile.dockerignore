@@ -1,0 +1,12 @@
+.git
+**/__pycache__
+*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
+# Exclude the nested duplicate project copy to keep the image clean
+src/sdk-python
