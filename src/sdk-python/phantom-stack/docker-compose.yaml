@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    image: sdk-python:dev
+    working_dir: /app
+    environment:
+      # Dummy AWS creds so tests relying on boto3/moto have a region/credentials.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    command: sleep infinity
