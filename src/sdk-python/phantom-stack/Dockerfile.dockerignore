@@ -1,0 +1,10 @@
+# Override file: keep build context lean but include everything tests need.
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
