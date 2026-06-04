@@ -1,0 +1,14 @@
+# Build-context excludes for the phantom-stack image.
+# Note: we intentionally do NOT exclude .git (hatch-vcs reads tags), though a
+# pretend version is provided via build arg if .git is absent.
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage*
+build
+dist
+.venv
+.env
+**/*.bak
