@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Strands talks to cloud model providers; no live credentials are baked in.
+      # Supply real values at runtime if you want to hit live providers.
+      - AWS_DEFAULT_REGION=us-east-1
