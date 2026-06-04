@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+    container_name: strands-sdk-python
+    environment:
+      # Avoid accidental real AWS calls during local dev; tests use moto mocks.
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    working_dir: /app
+    command: ["sleep", "infinity"]
