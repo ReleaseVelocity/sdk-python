@@ -1,0 +1,18 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: app
+    container_name: strands-sdk-python
+    working_dir: /app
+    # Mount the source so a developer can edit code and re-run tests live.
+    volumes:
+      - ..:/app
+    environment:
+      # AWS creds are mocked by moto in the test suite, but set safe defaults.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      LOG_LEVEL: INFO
+    command: sleep infinity
