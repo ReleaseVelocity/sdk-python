@@ -1,0 +1,17 @@
+# Exclude the recursive duplicate of the project that lives under src/
+src/sdk-python
+
+# Caches and build artifacts
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+build/
+dist/
+*.egg-info
+.venv
+venv
+
+# The docker setup itself
+phantom-stack
