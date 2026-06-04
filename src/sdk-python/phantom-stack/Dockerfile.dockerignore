@@ -1,0 +1,18 @@
+# Ignore VCS-internal and cache cruft
+.git
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+.venv
+.coverage*
+
+# Exclude the accidental nested recursive copy of the project tree;
+# the real package lives at src/strands.
+src/sdk-python
+
+# Don't copy our own stack files into the image build context unnecessarily
+phantom-stack
