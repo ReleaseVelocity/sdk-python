@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+    container_name: strands-sdk-python
+    environment:
+      # Provide dummy AWS creds/region so boto3-backed tests that don't use moto
+      # don't fail trying to resolve credentials.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    working_dir: /app
+    command: ["sleep", "infinity"]
