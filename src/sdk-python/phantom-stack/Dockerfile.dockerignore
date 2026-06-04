@@ -1,0 +1,14 @@
+# Build-context excludes for the phantom-stack Dockerfile.
+# Keeps the image lean and avoids copying the nested duplicate tree and caches.
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+.coverage*
+.venv
+.env
+# Nested duplicate of the project that lives under src/sdk-python
+src/sdk-python
