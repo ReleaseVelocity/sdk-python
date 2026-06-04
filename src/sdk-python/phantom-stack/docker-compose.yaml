@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      # Default AWS credentials so boto3-backed tests (with moto) don't probe
+      # the real environment. Override as needed.
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
