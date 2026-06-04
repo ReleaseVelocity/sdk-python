@@ -1,0 +1,13 @@
+# Build context exclusions (override: project has no .dockerignore of its own)
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+# Redundant nested duplicate of the source tree
+src/sdk-python
