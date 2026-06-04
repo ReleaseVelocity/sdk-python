@@ -8,12 +8,31 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Dependabot-triggered runs read from the separate "Dependabot secrets" store
+    # and therefore cannot see Actions secrets like STRANDS_INTEG_TEST_ROLE.
+    # Skip the AWS-dependent integration test job for Dependabot PRs to avoid
+    # a deterministic failure on every dependency-update PR.
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        # Fail fast with a clear, self-diagnosing message instead of producing
+        # 12 opaque "Could not load credentials from any providers" retry lines
+        # if STRANDS_INTEG_TEST_ROLE is unexpectedly empty (e.g. fork PR or
+        # missing secret configuration).
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set for this run." \
+                 "This typically means the workflow was triggered from a context that cannot" \
+                 "read repository Actions secrets (e.g. a Dependabot PR or an unapproved fork PR)."
+            exit 78
+          fi
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
