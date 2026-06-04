@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PKG_VERSION: "0.0.0"
+    image: sdk-python:latest
+    pull_policy: never
+    container_name: sdk-python
+    environment:
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+    command: ["sleep", "infinity"]
