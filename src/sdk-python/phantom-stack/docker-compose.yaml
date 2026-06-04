@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    container_name: sdk-python
+    environment:
+      - SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0
+      - PYTHONUNBUFFERED=1
+    working_dir: /app
+    # Keep the container alive for interactive development / exec.
+    command: ["tail", "-f", "/dev/null"]
