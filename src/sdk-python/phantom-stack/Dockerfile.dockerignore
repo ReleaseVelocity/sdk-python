@@ -1,0 +1,14 @@
+# Build context cleanup for the phantom-stack image build.
+# (The project itself ships no .dockerignore, so this only affects our build.)
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.coverage*
+.git
+.venv
+build
+dist
+docs
+phantom-stack
