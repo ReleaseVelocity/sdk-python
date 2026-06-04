@@ -1,0 +1,18 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    working_dir: /app
+    # Mount the source for live development; named volume keeps the
+    # editable install's egg-info and installed deps intact.
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
+      - ../pyproject.toml:/app/pyproject.toml
+    environment:
+      - HATCH_VCS_PRETEND_VERSION=0.0.0+dev
+    command: ["sleep", "infinity"]
