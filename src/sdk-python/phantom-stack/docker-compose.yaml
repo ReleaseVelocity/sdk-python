@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python
+    container_name: sdk-python
+    environment:
+      # Deterministic version for hatch-vcs / setuptools_scm (no .git present).
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Dummy AWS creds so boto3-based tests/imports don't probe real endpoints.
+      AWS_DEFAULT_REGION: "us-west-2"
+    command: ["sleep", "infinity"]
