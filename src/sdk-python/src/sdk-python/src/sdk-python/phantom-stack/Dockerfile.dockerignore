@@ -1,0 +1,11 @@
+# Exclude the duplicated nested checkout to keep the build context small.
+src/sdk-python
+**/__pycache__
+**/*.pyc
+.git
+build
+dist
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
