@@ -8,12 +8,32 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Only run when the workflow has access to repository secrets:
+    #   * merge_group events always run from the base repo and have access.
+    #   * pull_request_target events from forks do NOT receive repo secrets,
+    #     so the role-to-assume below would resolve to an empty string and
+    #     `aws-actions/configure-aws-credentials` would fail with
+    #     "Could not load credentials from any providers". Gate to PRs that
+    #     originate from the base repository.
+    if: >-
+      ${{ github.event_name == 'merge_group' ||
+          (github.event_name == 'pull_request_target' &&
+           github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integ-test role secret is configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty or unavailable in this trigger context. Configure the repository/environment secret before running integration tests."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
