@@ -1,0 +1,13 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+# Exclude the nested duplicate source tree to keep the image lean.
+src/sdk-python
+phantom-stack
