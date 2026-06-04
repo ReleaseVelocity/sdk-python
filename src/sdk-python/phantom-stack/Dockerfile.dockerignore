@@ -1,0 +1,6 @@
+# Keep build context lean. Source, tests, and configs are all included.
+**/__pycache__
+**/*.pyc
+.git
+phantom-stack
+build/coverage
