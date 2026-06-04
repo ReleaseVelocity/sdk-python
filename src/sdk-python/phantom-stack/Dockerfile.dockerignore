@@ -1,0 +1,12 @@
+# Build artifacts / caches that don't belong in the image.
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+.venv/
+htmlcov/
+.coverage
