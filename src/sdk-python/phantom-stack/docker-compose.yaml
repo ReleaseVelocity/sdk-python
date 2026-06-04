@@ -1,0 +1,18 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+      args:
+        HATCH_VCS_PRETEND_VERSION: "0.0.0.dev0"
+    image: strands-sdk-python:dev
+    working_dir: /app
+    # Keep the container alive so developers can exec in to run tests/linters.
+    command: ["sleep", "infinity"]
+    environment:
+      # Avoid real AWS calls during tests (moto/mocks are used).
+      AWS_DEFAULT_REGION: "us-east-1"
+      AWS_ACCESS_KEY_ID: "testing"
+      AWS_SECRET_ACCESS_KEY: "testing"
