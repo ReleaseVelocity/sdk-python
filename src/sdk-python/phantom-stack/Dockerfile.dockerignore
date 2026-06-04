@@ -1,0 +1,15 @@
+# Exclude the nested duplicate project tree to keep the build context small.
+src/sdk-python
+
+# Common Python noise
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+
+# The build context's own phantom-stack (avoid recursive copy)
+phantom-stack
