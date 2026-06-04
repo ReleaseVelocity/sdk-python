@@ -1,0 +1,13 @@
+# Override dockerignore for the phantom-stack build.
+# Exclude noise and the nested duplicate project tree to keep the context small.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+src/sdk-python
+phantom-stack
