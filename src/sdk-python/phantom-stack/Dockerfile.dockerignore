@@ -1,0 +1,12 @@
+# Exclude the accidental nested duplicate source tree to keep the build context small
+src/sdk-python
+# Common noise
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
