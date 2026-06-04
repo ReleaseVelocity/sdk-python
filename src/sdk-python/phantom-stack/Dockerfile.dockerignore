@@ -1,0 +1,13 @@
+# Keep the build context lean. The project ships no .dockerignore of its own.
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage*
+build
+dist
+.venv
+.env
+.git
+phantom-stack
