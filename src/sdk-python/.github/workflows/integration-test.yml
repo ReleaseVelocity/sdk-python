@@ -14,6 +14,15 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Validate secrets
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty. If this run was triggered by Dependabot (pull_request_target on a dependabot/* branch), the secret must also be defined under Settings → Secrets and variables → Dependabot (Actions-scoped secrets are not exposed to Dependabot-triggered runs)."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
