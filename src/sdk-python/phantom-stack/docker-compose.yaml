@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    environment:
+      # Dummy AWS creds so any boto3 client init in tests stays offline-friendly.
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-west-2
+    working_dir: /app
+    command: ["sleep", "infinity"]
