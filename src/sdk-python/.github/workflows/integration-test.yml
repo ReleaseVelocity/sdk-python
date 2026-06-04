@@ -1,0 +1,70 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Skip runs that cannot access repository secrets:
+    #   * Dependabot PRs (run with the dependabot[bot] actor and use Dependabot
+    #     secrets, not regular repository secrets).
+    #   * PRs from forked repositories (secrets are not exposed to forks under
+    #     pull_request_target for security reasons).
+    # In both cases ${{ secrets.STRANDS_INTEG_TEST_ROLE }} resolves to an empty
+    # string, which causes aws-actions/configure-aws-credentials to fail with a
+    # misleading "Could not load credentials from any providers" error after
+    # exhausting all retries. merge_group events always have access to secrets
+    # so they are unaffected by this guard.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify required secrets are available
+        # Fail fast with a clear, actionable error if the OIDC role secret is
+        # missing or empty. Without this, configure-aws-credentials silently
+        # falls back to the default provider chain and burns ~3 minutes on
+        # retries before failing with a misleading message.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is not set or is empty for this run. This typically happens when the workflow runs in a context that cannot access repository secrets (e.g., a Dependabot PR or a fork PR). Define the secret in Settings -> Secrets and variables (and under the Dependabot tab if Dependabot PRs need to run integration tests)."
+            exit 1
+          fi
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
