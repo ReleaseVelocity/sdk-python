@@ -9,11 +9,28 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Bind to the `manual-approval` GitHub Environment so environment-scoped
+    # secrets (notably STRANDS_INTEG_TEST_ROLE) are injected at runtime.
+    # Without this, secrets.STRANDS_INTEG_TEST_ROLE evaluates to an empty
+    # string, and aws-actions/configure-aws-credentials falls back to the
+    # default provider chain and fails with
+    # "Could not load credentials from any providers" after 12 retries.
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty. Configure it as an environment secret on the 'manual-approval' GitHub Environment (Settings -> Environments -> manual-approval -> Environment secrets). For Dependabot-triggered runs, also mirror the value into Dependabot secrets (Settings -> Secrets and variables -> Dependabot)."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE is configured."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
