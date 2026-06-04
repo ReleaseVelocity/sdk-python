@@ -1,0 +1,14 @@
+# Build context lives at the project root. Exclude transient artifacts so they
+# don't bloat the image or shadow the editable install.
+**/.git
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.venv
+**/build
+**/dist
+**/.coverage*
+**/.DS_Store
+phantom-stack/.dockerignore
