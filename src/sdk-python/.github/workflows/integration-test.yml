@@ -9,6 +9,15 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip for pull_request_target events originating from forks: repository
+    # secrets (including STRANDS_INTEG_TEST_ROLE) are not exposed to forked-PR
+    # runs, so the Configure Credentials step would resolve role-to-assume to
+    # an empty string and fail with "Could not load credentials from any
+    # providers". merge_group runs (no pull_request context) and same-repo
+    # PRs still execute and have access to secrets.
+    if: >-
+      github.event_name != 'pull_request_target' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     permissions:
       id-token: write
       pull-requests: read
