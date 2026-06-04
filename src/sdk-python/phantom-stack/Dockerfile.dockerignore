@@ -1,0 +1,14 @@
+# Build context excludes - keep the image lean.
+**/.git
+**/__pycache__
+**/*.pyc
+.venv
+**/.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+**/.coverage*
+# Exclude the stray nested duplicate tree; the real package lives in src/strands.
+src/sdk-python
