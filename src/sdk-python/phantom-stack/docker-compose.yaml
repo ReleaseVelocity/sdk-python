@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    working_dir: /app
+    environment:
+      - SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0+dev
+      - SETUPTOOLS_SCM_PRETEND_VERSION_FOR_STRANDS_AGENTS=0.0.0+dev
+      - AWS_DEFAULT_REGION=us-west-2
+    command: ["sleep", "infinity"]
