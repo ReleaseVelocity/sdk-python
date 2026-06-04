@@ -1,0 +1,12 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python
+    container_name: strands-sdk-python
+    working_dir: /app
+    environment:
+      # Test fixtures expect dummy AWS creds; provide sane defaults.
+      AWS_DEFAULT_REGION: us-west-2
+    command: ["sleep", "infinity"]
