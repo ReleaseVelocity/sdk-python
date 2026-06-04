@@ -1,0 +1,13 @@
+**/__pycache__
+**/*.pyc
+.git
+build
+dist
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+phantom-stack
+# Exclude the accidental nested duplicate tree to keep the context small
+src/sdk-python
