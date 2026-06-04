@@ -1,0 +1,12 @@
+# Build context exclusions for the containerized dev environment.
+# (Project has no own .dockerignore; this lives under phantom-stack/.)
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+phantom-stack
