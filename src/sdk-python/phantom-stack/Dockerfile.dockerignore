@@ -1,0 +1,12 @@
+# Build context exclusions (project has no .dockerignore of its own).
+# Keep source, tests, and manifests; skip local caches/artifacts.
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+phantom-stack
