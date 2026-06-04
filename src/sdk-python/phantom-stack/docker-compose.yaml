@@ -1,0 +1,17 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    container_name: strands-sdk-python
+    image: strands-sdk-python
+    working_dir: /app
+    environment:
+      - LOG_LEVEL=INFO
+      # Dummy AWS creds so boto3-based code paths in tests don't try real auth.
+      - AWS_DEFAULT_REGION=us-west-2
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+    command: ["sleep", "infinity"]
