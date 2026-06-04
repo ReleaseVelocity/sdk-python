@@ -1,0 +1,20 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+      args:
+        STRANDS_VERSION: "0.0.0"
+    image: strands-sdk-python:dev
+    # AWS calls in unit tests are mocked via moto; provide dummy creds so any
+    # boto3 client construction during collection/tests does not fail.
+    environment:
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+    working_dir: /app
+    # Keep the container alive so developers can exec in and run tests/linters.
+    command: ["sleep", "infinity"]
