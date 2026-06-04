@@ -1,0 +1,17 @@
+# Exclude the nested duplicate project tree that lives under src/sdk-python.
+src/sdk-python
+
+# Common noise that should never enter the build context.
+**/__pycache__
+**/*.pyc
+.git
+.github
+.venv
+build
+dist
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.coverage*
+docs
+phantom-stack
