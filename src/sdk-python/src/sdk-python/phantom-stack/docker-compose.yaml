@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python
+    container_name: strands-sdk-python
+    working_dir: /app
+    # Keep the container alive so developers can exec in and run tests/linters.
+    command: ["sleep", "infinity"]
+    environment:
+      # Provide dummy AWS creds so boto3/moto based tests can import/run.
+      AWS_DEFAULT_REGION: us-west-2
