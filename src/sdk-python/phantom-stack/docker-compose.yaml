@@ -1,0 +1,11 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python
+    container_name: strands-sdk-python
+    environment:
+      # hatch-vcs has no git tags to read from in this context.
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+    command: ["sleep", "infinity"]
