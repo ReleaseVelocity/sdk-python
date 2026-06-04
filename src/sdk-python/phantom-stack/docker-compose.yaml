@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    environment:
+      # Avoid real AWS calls; tests use moto. Provide dummy creds/region so any
+      # boto3 client construction at import/collection time succeeds.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+    working_dir: /app
+    command: ["sleep", "infinity"]
