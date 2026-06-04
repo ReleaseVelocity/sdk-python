@@ -1,0 +1,15 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+**/.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+**/.DS_Store
+# Exclude the nested duplicate source tree that is not part of the real project
+src/sdk-python
+phantom-stack
