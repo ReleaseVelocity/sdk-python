@@ -1,0 +1,13 @@
+# Exclude the nested duplicate tree (real package lives at src/strands).
+src/sdk-python
+# Build/cache artifacts.
+**/__pycache__
+**/*.pyc
+.git
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.venv
+.coverage*
