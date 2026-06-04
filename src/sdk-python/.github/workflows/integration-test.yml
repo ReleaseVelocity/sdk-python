@@ -8,6 +8,12 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Dependabot-triggered pull_request_target events do not have access to
+    # repository Actions secrets (e.g. STRANDS_INTEG_TEST_ROLE), which causes
+    # aws-actions/configure-aws-credentials to fail with
+    # "Could not load credentials from any providers". Skip the integration
+    # test job for Dependabot PRs to avoid deterministic failures.
+    if: ${{ github.actor != 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
