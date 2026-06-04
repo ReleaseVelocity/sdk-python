@@ -1,0 +1,13 @@
+# Exclude the nested duplicate source tree to keep build context small
+src/sdk-python
+# Standard Python junk
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
