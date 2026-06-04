@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    environment:
+      # Avoid accidental real AWS calls; tests use moto/mocks.
+      AWS_DEFAULT_REGION: us-west-2
+      HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    working_dir: /app
+    # Keep the container alive for interactive dev / exec.
+    command: ["tail", "-f", "/dev/null"]
