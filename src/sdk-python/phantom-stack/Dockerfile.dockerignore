@@ -1,0 +1,7 @@
+phantom-stack/
+.git/
+**/__pycache__/
+**/*.pyc
+.venv/
+build/
+dist/
