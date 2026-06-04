@@ -9,7 +9,6 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
-    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
