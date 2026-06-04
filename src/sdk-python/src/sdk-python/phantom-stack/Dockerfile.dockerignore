@@ -1,0 +1,10 @@
+# Build context exclusions (referenced via phantom-stack/Dockerfile.dockerignore).
+phantom-stack
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
