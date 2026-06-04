@@ -8,12 +8,24 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip for Dependabot and fork PRs where repository secrets are not available
+    # under pull_request_target. Without secrets, configure-aws-credentials would
+    # otherwise fail after ~100s of retries with a misleading credentials error.
+    if: ${{ github.actor != 'dependabot[bot]' && (github.event_name != 'pull_request_target' || github.event.pull_request.head.repo.full_name == github.repository) }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integ test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty for this run context (likely a Dependabot or fork PR under pull_request_target). Failing fast instead of retrying configure-aws-credentials 12 times."
+            exit 1
+          fi
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
