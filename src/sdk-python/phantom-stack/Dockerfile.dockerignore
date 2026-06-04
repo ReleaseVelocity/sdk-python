@@ -1,0 +1,14 @@
+# Exclude noise from the build context (project has no .dockerignore of its own)
+**/.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+# Nested duplicate source tree not needed for the install/tests
+src/sdk-python
+phantom-stack
