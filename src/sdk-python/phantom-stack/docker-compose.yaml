@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    image: app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    environment:
+      # Default region so boto3/bedrock-based tests can construct clients.
+      # Override via your own env for real AWS usage.
+      AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION:-us-east-1}
+    working_dir: /app
+    command: ["sleep", "infinity"]
