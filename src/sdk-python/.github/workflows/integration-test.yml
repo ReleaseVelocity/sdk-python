@@ -9,6 +9,14 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip this job for Dependabot PRs. Dependabot-triggered workflow runs do
+    # not have access to standard repository Actions secrets (they read from a
+    # separate `dependabot` secret scope), so `secrets.STRANDS_INTEG_TEST_ROLE`
+    # resolves to an empty string and `aws-actions/configure-aws-credentials`
+    # fails with "Credentials could not be loaded". Dependency bumps don't
+    # need to run AWS-backed integration tests against PR head; the regular
+    # post-merge flow on `main` will exercise them with full secret access.
+    if: github.actor != 'dependabot[bot]'
     permissions:
       id-token: write
       pull-requests: read
