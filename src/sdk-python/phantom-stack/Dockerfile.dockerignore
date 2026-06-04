@@ -1,0 +1,12 @@
+# Build-time dockerignore for the phantom-stack build (context = project root).
+**/.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+# Accidental nested duplicate of the project tree; not needed for the build.
+src/sdk-python
