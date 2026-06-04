@@ -1,0 +1,15 @@
+# Exclude the recursive self-referential nested copy to avoid infinite COPY.
+src/sdk-python
+**/sdk-python/src/sdk-python
+
+# Standard ignores
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
