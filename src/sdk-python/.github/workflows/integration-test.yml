@@ -8,6 +8,18 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip this job when secrets are not available to the workflow run, which
+    # is the case for pull_request_target events triggered by forks or by
+    # Dependabot. Without a populated `STRANDS_INTEG_TEST_ROLE` secret the
+    # `aws-actions/configure-aws-credentials` step receives an empty
+    # `role-to-assume` input and fails the run with "Could not load credentials
+    # from any providers". Integration tests on fork/Dependabot PRs must be
+    # run manually after review.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     permissions:
       id-token: write
