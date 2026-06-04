@@ -1,0 +1,15 @@
+# Build-context excludes for the phantom-stack image build.
+# Keeps the editable-install layer cache clean and the context small.
+**/__pycache__/
+**/*.pyc
+.git/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+phantom-stack/
