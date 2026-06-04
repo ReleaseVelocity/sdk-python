@@ -9,11 +9,34 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # The AWS role ARN and API-keys secret name are scoped to the
+    # `manual-approval` GitHub Environment. Declaring `environment:` here is
+    # required so that environment-scoped secrets (e.g. STRANDS_INTEG_TEST_ROLE,
+    # STRANDS_TEST_API_KEYS_SECRET_NAME) are injected into this job. Without
+    # this, `secrets.STRANDS_INTEG_TEST_ROLE` resolves to an empty string and
+    # `aws-actions/configure-aws-credentials` fails the OIDC validation with
+    # "Could not load credentials from any providers" after 12 retries.
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        # Fail fast with a clear message if the role ARN secret is missing/empty
+        # (e.g. the environment scope is misconfigured, or the run originates
+        # from a context where the secret is not exposed). This prevents
+        # `aws-actions/configure-aws-credentials` from burning ~24 minutes of
+        # runner time retrying the credential provider chain 12 times.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Missing required secret STRANDS_INTEG_TEST_ROLE."
+            echo "::error::Ensure the secret is defined on the 'manual-approval' GitHub Environment (or as a repository secret) and that this job declares 'environment: manual-approval'."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
