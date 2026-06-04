@@ -14,6 +14,26 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      # Preflight: fail fast with a clear message if the IAM role secret
+      # is missing or unavailable in this trigger context. Without this
+      # guard, aws-actions/configure-aws-credentials silently drops the
+      # empty role-to-assume input, falls through to the default credential
+      # provider chain, retries 12 times, and ends with the opaque error
+      # "Could not load credentials from any providers". The most common
+      # cause is a pull_request_target run from a fork, where GitHub does
+      # not expose repository/organization secrets by design.
+      - name: Verify integration-test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is empty or unavailable in this trigger context."
+            echo "::error::This commonly happens for pull_request_target runs from forks, where repository/organization secrets are not exposed."
+            echo "::error::Verify the secret exists at the repo/org level and that the workflow trigger context has access to it."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE secret is present."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
