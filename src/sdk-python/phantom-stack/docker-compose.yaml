@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: app
+    container_name: strands-sdk-python
+    environment:
+      HATCH_VCS_PRETEND_VERSION: "0.0.0+dev"
+    working_dir: /app
+    # Keep the dev container alive so developers can exec in to run
+    # tests, linters, and other project commands.
+    command: ["sleep", "infinity"]
