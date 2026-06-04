@@ -1,0 +1,14 @@
+# Exclude the phantom-stack tooling itself
+phantom-stack
+# Exclude the nested duplicate project tree
+src/sdk-python
+# Common caches / build artifacts
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
