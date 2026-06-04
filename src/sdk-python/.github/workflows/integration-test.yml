@@ -9,11 +9,30 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Dependabot-originated pull_request_target runs use a separate "Dependabot
+    # secrets" scope and cannot read regular Actions/environment secrets,
+    # causing `secrets.STRANDS_INTEG_TEST_ROLE` to expand to an empty string and
+    # the AWS credentials step to fail. Dependency-bump PRs do not need cloud
+    # integration tests, so skip this job for Dependabot.
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are present
+        # Fail fast with a clear, actionable error if the secret expands to an
+        # empty string (e.g., because the workflow was triggered in a context
+        # where secrets are restricted), instead of letting
+        # configure-aws-credentials retry 12 times against an empty role ARN.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty. If this run was triggered by Dependabot or a forked PR, add the secret under Settings -> Secrets and variables -> Dependabot (in addition to Actions)."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
