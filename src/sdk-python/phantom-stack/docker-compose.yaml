@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    environment:
+      # Region used by moto-based unit tests / boto defaults
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    working_dir: /app
+    command: ["sleep", "infinity"]
