@@ -1,0 +1,14 @@
+# Exclude the nested duplicate project tree to avoid copying it twice.
+src/sdk-python/
+
+# Exclude our own docker setup from the build context.
+phantom-stack/
+
+# Common noise.
+.git/
+**/__pycache__/
+**/*.pyc
+build/
+dist/
+*.egg-info/
+.venv/
