@@ -1,9 +1,0 @@
-services:
-  sdk-python:
-    image: app
-    build:
-      context: ..
-      dockerfile: phantom-stack/Dockerfile
-    container_name: strands-sdk-python
-    working_dir: /app
-    command: ["sleep", "infinity"]
