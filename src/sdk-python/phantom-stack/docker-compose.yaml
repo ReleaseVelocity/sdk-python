@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:latest
+    container_name: strands-sdk-python
+    environment:
+      # Default AWS creds for moto-based unit tests (no real calls are made).
+      AWS_ACCESS_KEY_ID: testing
+      AWS_SECRET_ACCESS_KEY: testing
+      AWS_DEFAULT_REGION: us-west-2
+      SETUPTOOLS_SCM_PRETEND_VERSION: 1.0.0
+      HATCH_VCS_PRETEND_VERSION: 1.0.0
+    working_dir: /app
+    command: sleep infinity
