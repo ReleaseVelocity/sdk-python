@@ -1,0 +1,15 @@
+# Exclude the nested duplicate project copy to keep the build context small.
+src/sdk-python
+
+# VCS / caches / build artifacts
+.git
+**/__pycache__
+**/*.pyc
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.venv
+.coverage*
+.audio_cache
