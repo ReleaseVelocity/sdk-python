@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    container_name: sdk-python
+    working_dir: /app
+    environment:
+      # Stub AWS creds so boto3-based tests / clients can initialize offline.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+      HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    # Keep the container alive so a developer can exec in and run tests/linters.
+    command: ["sleep", "infinity"]
