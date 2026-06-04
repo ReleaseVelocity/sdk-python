@@ -1,0 +1,13 @@
+# Exclude the nested duplicate project tree and common cruft from the build
+# context to keep the image lean and avoid copying a second copy of the repo.
+src/sdk-python
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+phantom-stack
