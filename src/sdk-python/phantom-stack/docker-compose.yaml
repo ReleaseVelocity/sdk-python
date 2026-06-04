@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    image: app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: sdk-python
+    working_dir: /app
+    environment:
+      # Dummy AWS creds so boto3-based tests/imports don't fail looking for credentials
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    command: ["sleep", "infinity"]
