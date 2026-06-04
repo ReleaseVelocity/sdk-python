@@ -9,11 +9,29 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Scope the job to the `manual-approval` environment so that
+    # `STRANDS_INTEG_TEST_ROLE` (and other integration-test secrets) resolve
+    # from environment-scoped secrets. Environment secrets are exposed to
+    # `pull_request_target` (including dependabot-originated PRs once the
+    # required reviewers approve the deployment), whereas plain repository
+    # secrets are not made available to dependabot events.
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set or not exposed to this workflow context."
+            echo "::error::Ensure the secret is configured on the 'manual-approval' environment (or as a Dependabot secret for dependabot-originated PRs) and contains a valid IAM role ARN."
+            echo "::error::The IAM role's trust policy must also allow the GitHub OIDC provider (token.actions.githubusercontent.com) for repo:${GITHUB_REPOSITORY}:*."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
