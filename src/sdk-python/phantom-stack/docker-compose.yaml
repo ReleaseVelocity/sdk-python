@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+    image: strands-sdk-python:latest
+    container_name: strands-sdk-python
+    working_dir: /app
+    environment:
+      # Avoid real AWS calls during tests; moto mocks AWS in the test suite.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: testing
+      AWS_SECRET_ACCESS_KEY: testing
+    command: ["sleep", "infinity"]
