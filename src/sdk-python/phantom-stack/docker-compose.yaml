@@ -1,0 +1,17 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    environment:
+      # hatch-vcs version pin (no git repo in this tree)
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      HATCH_VCS_PRETEND_VERSION: "0.0.0"
+      # Dummy AWS creds so boto3-based tests/imports never hit real endpoints.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    working_dir: /app
+    command: ["sleep", "infinity"]
