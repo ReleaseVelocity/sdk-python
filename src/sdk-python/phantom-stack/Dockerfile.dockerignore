@@ -1,0 +1,11 @@
+# Exclude the large nested duplicate tree (src/sdk-python/...) and VCS/cache dirs
+src/sdk-python
+**/.git
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.venv
+**/build
+**/*.egg-info
+phantom-stack
