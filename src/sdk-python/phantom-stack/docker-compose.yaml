@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python-app
+    container_name: sdk-python
+    environment:
+      # hatch-vcs version fallback (no git tags in build context)
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Dummy AWS creds so boto3-based tests/imports never hit real AWS.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    command: ["sleep", "infinity"]
