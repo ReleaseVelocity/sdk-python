@@ -9,11 +9,25 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test role secret is configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty or not available in this run context."
+            echo "::error::This usually means the secret is scoped to a GitHub Environment that this job is not bound to,"
+            echo "::error::or the run was triggered by a context (e.g. fork/Dependabot) that does not receive secrets."
+            echo "::error::Fix: ensure STRANDS_INTEG_TEST_ROLE is set on the 'manual-approval' environment, or update the"
+            echo "::error::'environment:' key on the check-access-and-checkout job to match the environment hosting the secret."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE secret is present."
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
