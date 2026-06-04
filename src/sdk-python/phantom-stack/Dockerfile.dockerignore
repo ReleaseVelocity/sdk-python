@@ -1,0 +1,9 @@
+# Avoid copying the recursive nested project copy into the image.
+src/sdk-python
+**/phantom-stack
+.git
+**/__pycache__
+**/*.pyc
+build
+dist
+*.egg-info

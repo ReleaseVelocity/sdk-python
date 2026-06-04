@@ -1,0 +1,17 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        STRANDS_VERSION: "0.0.0"
+    image: strands-sdk-python:dev
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      # Ensure tooling that inspects the version finds a stable value.
+      SETUPTOOLS_SCM_PRETEND_VERSION_FOR_STRANDS_AGENTS: "0.0.0"
+      # AWS unit tests are mocked via moto; provide harmless defaults so the
+      # botocore client constructors do not complain about missing region.
+      AWS_DEFAULT_REGION: "us-east-1"
