@@ -1,0 +1,55 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Skip when the integration-test AWS role secret is unavailable to the
+    # workflow run's context. This is the canonical signature of Dependabot
+    # (and fork) PR runs on `pull_request_target`: standard repository Actions
+    # secrets are not exposed to those contexts, so `secrets.STRANDS_INTEG_TEST_ROLE`
+    # silently expands to an empty string. Without this guard, the
+    # `Configure Credentials` step calls aws-actions/configure-aws-credentials
+    # with no role-to-assume, OIDC assume-role is skipped, and the action
+    # retries 12 times with "Could not load credentials from any providers"
+    # before failing. Guarding the job lets Dependabot/fork PRs skip the
+    # secret-bearing integration tests cleanly instead of failing with an
+    # opaque credentials error.
+    if: ${{ secrets.STRANDS_INTEG_TEST_ROLE != '' }}
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
