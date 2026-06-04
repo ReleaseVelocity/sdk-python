@@ -1,0 +1,12 @@
+# Override dockerignore for the build (project has none of its own).
+# Exclude the nested duplicate source tree and caches to keep context small.
+src/sdk-python/
+**/__pycache__/
+**/*.pyc
+.venv/
+build/
+dist/
+.git/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
