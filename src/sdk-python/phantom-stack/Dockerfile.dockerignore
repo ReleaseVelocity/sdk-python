@@ -1,0 +1,8 @@
+# Build context is the project root. Exclude the nested duplicate project copy
+# and other large/irrelevant dirs to keep the context small.
+src/sdk-python
+phantom-stack
+**/__pycache__
+**/*.pyc
+.github
+build
