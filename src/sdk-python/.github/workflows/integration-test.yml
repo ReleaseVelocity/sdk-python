@@ -8,6 +8,14 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip on Dependabot-originated PRs: Actions repository secrets (including
+    # STRANDS_INTEG_TEST_ROLE) are not exposed to Dependabot runs by default,
+    # which causes role-to-assume to expand to an empty string and the OIDC
+    # AssumeRoleWithWebIdentity call to fail deterministically. Dependabot has
+    # a separate secrets scope (Settings -> Secrets and variables -> Dependabot);
+    # until that is configured, skip the integration test for these PRs rather
+    # than burning 12 retries on "Could not load credentials from any providers".
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
