@@ -1,0 +1,10 @@
+# Keep build context lean but include everything needed for tests.
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+phantom-stack
