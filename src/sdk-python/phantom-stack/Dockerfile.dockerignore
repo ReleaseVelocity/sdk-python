@@ -1,0 +1,8 @@
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.git
+# Nested duplicate copy of the project that is not part of the package
+src/sdk-python
