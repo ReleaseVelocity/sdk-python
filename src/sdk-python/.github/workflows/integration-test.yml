@@ -9,11 +9,25 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # The STRANDS_INTEG_TEST_ROLE secret is scoped to the `manual-approval`
+    # GitHub Environment. Declaring the environment here both (a) injects the
+    # environment-scoped secret into the job and (b) gates fork/dependabot
+    # `pull_request_target` runs behind manual approval, which is the
+    # intended security model for this workflow.
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty. It must be defined in the 'manual-approval' GitHub Environment (Settings -> Environments -> manual-approval -> Secrets) and the job must declare 'environment: manual-approval'." >&2
+            exit 1
+          fi
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
