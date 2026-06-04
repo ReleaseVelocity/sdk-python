@@ -1,0 +1,16 @@
+# Build context lives at the project root (build context: ..)
+# Exclude heavy / irrelevant dirs to keep the build fast and avoid the
+# nested duplicate source tree shadowing the real package.
+**/.git
+**/__pycache__
+**/*.pyc
+.venv
+**/.venv
+build
+dist
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+.coverage*
+src/sdk-python
+phantom-stack
