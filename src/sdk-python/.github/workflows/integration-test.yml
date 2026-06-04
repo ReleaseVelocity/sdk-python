@@ -14,6 +14,24 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integ test role secret is configured
+        # Fail fast with a clear message when STRANDS_INTEG_TEST_ROLE is empty
+        # (e.g. secret not defined at the right scope, or not exposed to
+        # pull_request_target runs from forks). Without this, the
+        # configure-aws-credentials step retries 12 times over ~90s before
+        # failing with an opaque "Could not load credentials from any
+        # providers" error.
+        # Note: the `secrets` context is not available in step-level `if:`
+        # conditions, so the secret is surfaced via env and tested in the
+        # shell instead.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is not set or not exposed to this trigger context (e.g. pull_request_target from a fork). Verify the secret is configured at the repository level, or add 'environment:' to this job if it is stored at the environment level."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
