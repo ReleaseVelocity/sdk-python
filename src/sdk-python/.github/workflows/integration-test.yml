@@ -1,0 +1,67 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Gate secret access behind a GitHub Environment that requires maintainer
+    # approval. Without this, `pull_request_target` runs from forks (and other
+    # untrusted contexts such as Dependabot) execute but without access to
+    # repository secrets, causing `aws-actions/configure-aws-credentials` to
+    # fail with "Could not load credentials from any providers" because
+    # `secrets.STRANDS_INTEG_TEST_ROLE` resolves to an empty string.
+    environment: manual-approval
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify integration-test secret is available
+        # Fail fast with a clear message if the integration-test role secret is
+        # not exposed to this run (e.g. secret missing or not released to this
+        # context). This avoids the 12x retry / ~75s stall produced by
+        # `aws-actions/configure-aws-credentials` when it has no inputs.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is not available in this run."
+            echo "This typically means the workflow is running from a fork or untrusted"
+            echo "context and the 'manual-approval' environment has not yet released"
+            echo "secrets. A repository maintainer must approve the deployment to the"
+            echo "'manual-approval' environment before integration tests can run."
+            exit 1
+          fi
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+          aws-region: us-east-1
+          mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
