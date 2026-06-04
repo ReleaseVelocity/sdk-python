@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    environment:
+      # Provide deterministic AWS-style env so boto3-based tests/imports don't
+      # probe for real credentials. Tests that need mocking use moto fixtures.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      SETUPTOOLS_SCM_PRETEND_VERSION: 0.0.0
+    working_dir: /app
+    command: sleep infinity
