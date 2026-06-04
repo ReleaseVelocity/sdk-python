@@ -8,6 +8,13 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Dependabot pull_request_target runs do not receive repository secrets by
+    # default, so STRANDS_INTEG_TEST_ROLE evaluates to an empty string and the
+    # configure-aws-credentials step fails with "Credentials could not be
+    # loaded". Skip integration tests for Dependabot PRs to avoid a guaranteed
+    # failure on those runs; integration tests will run when a maintainer
+    # rebases or otherwise triggers the workflow from a trusted context.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
