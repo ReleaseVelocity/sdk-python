@@ -1,0 +1,11 @@
+# Exclude the recursive nested copy that duplicates the whole project tree.
+src/sdk-python/
+# Exclude our own phantom-stack dir from the build context.
+phantom-stack/
+# Common noise.
+**/__pycache__/
+**/*.pyc
+.github/
+build/
+dist/
+*.egg-info/
