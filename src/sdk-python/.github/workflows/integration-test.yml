@@ -9,11 +9,35 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip integration tests for Dependabot PRs: GitHub does not pass repository
+    # secrets (including STRANDS_INTEG_TEST_ROLE) to workflows triggered by
+    # Dependabot via pull_request_target, so the OIDC role assumption would
+    # fail with "Could not load credentials from any providers".
+    if: github.actor != 'dependabot[bot]'
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test secret is available
+        # Fail fast with a clear, actionable message when the integration-test
+        # role secret is not exposed to this workflow run (e.g. fork PR,
+        # missing/renamed secret, or environment-scoped secret not in scope).
+        # This avoids the 12-retry "Could not load credentials from any
+        # providers" failure mode in aws-actions/configure-aws-credentials
+        # when role-to-assume is empty.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is not available to this workflow run."
+            echo "::error::This typically happens for fork PRs or when the secret is missing/renamed."
+            echo "::error::Verify the secret exists at the repository level (Settings -> Secrets and variables -> Actions)"
+            echo "::error::and that the IAM role's trust policy still trusts token.actions.githubusercontent.com."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE secret is present; proceeding with credential configuration."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
