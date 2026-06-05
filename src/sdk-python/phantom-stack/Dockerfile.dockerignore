@@ -1,0 +1,13 @@
+# Exclude the nested duplicate project copy (src/sdk-python/...) — not part of the package.
+src/sdk-python/
+# Caches / build artifacts
+**/__pycache__/
+**/*.pyc
+.git/
+build/
+dist/
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+phantom-stack/
