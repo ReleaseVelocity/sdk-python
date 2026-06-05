@@ -14,7 +14,41 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      # Detect runs that cannot access repository secrets (Dependabot PRs or
+      # PRs from forks). For pull_request_target, GitHub strips repository
+      # secrets and elevated GITHUB_TOKEN permissions from these sources, so
+      # role-to-assume below would resolve to an empty string and the AWS
+      # credentials action would burn ~70s of retries before failing with
+      # "Could not load credentials from any providers". Skip the AWS-backed
+      # steps for these runs and emit a clear message instead. merge_group
+      # events run in the trusted context and always proceed.
+      - name: Check secret availability
+        id: secret_check
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ "${{ github.event_name }}" = "merge_group" ]; then
+            echo "secrets_available=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+            echo "::warning::Skipping integration tests: Dependabot PRs do not receive repository secrets. Configure required secrets under Settings → Secrets and variables → Dependabot if these tests must run for Dependabot updates."
+            echo "secrets_available=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+            echo "::warning::Skipping integration tests: pull_request_target from a fork (${{ github.event.pull_request.head.repo.full_name }}) does not receive repository secrets. A maintainer must run these tests from a branch in ${{ github.repository }}."
+            echo "secrets_available=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -z "$STRANDS_INTEG_TEST_ROLE" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty. The AWS credentials step would fail with 'Could not load credentials from any providers'. Ensure the secret is configured for this repository."
+            exit 1
+          fi
+          echo "secrets_available=true" >> "$GITHUB_OUTPUT"
+
       - name: Configure Credentials
+        if: steps.secret_check.outputs.secrets_available == 'true'
         uses: aws-actions/configure-aws-credentials@v6
         with:
          role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
@@ -22,18 +56,22 @@ jobs:
          mask-aws-account-id: true
 
       - name: Checkout head commit
+        if: steps.secret_check.outputs.secrets_available == 'true'
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: Set up Python
+        if: steps.secret_check.outputs.secrets_available == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: '3.10'
       - name: Install dependencies
+        if: steps.secret_check.outputs.secrets_available == 'true'
         run: |
           pip install --no-cache-dir hatch 'virtualenv<21'
       - name: Run integration tests
+        if: steps.secret_check.outputs.secrets_available == 'true'
         env:
           AWS_REGION: us-east-1
           AWS_REGION_NAME: us-east-1
