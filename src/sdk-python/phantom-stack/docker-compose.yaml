@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PACKAGE_VERSION: "1.0.0"
+    image: strands-sdk-python:dev
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      # Defaults for the moto-based tests; consumers can override these.
+      AWS_DEFAULT_REGION: "us-west-2"
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
