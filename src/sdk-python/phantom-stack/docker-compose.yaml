@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python
+    working_dir: /app
+    environment:
+      - SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0
+      # Tests use moto / mocked AWS; provide dummy creds + region so boto3 never
+      # tries to reach real endpoints.
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=testing
+      - AWS_SECRET_ACCESS_KEY=testing
+    command: ["sleep", "infinity"]
