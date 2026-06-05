@@ -9,6 +9,16 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Dependabot-triggered `pull_request_target` runs receive a separate,
+    # restricted secret scope and do NOT have access to standard Actions
+    # secrets such as `STRANDS_INTEG_TEST_ROLE`. Without that secret the
+    # `configure-aws-credentials` step has no `role-to-assume` input, falls
+    # through the default credential provider chain and fails after 12
+    # retries (~2 minutes). Skip this job for Dependabot PRs so they fail
+    # fast and cleanly. Dependabot PRs don't need to run the AWS-backed
+    # integration tests; they will run for human-authored PRs and on
+    # merge_group (post-merge) as before.
+    if: github.actor != 'dependabot[bot]'
     permissions:
       id-token: write
       pull-requests: read
