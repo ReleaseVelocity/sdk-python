@@ -1,0 +1,15 @@
+# Exclude the recursive duplicate copy of the project under src/
+src/sdk-python
+
+# Build / cache artifacts
+**/__pycache__
+**/*.pyc
+.git
+build
+dist
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+*.bak
