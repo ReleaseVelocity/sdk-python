@@ -1,0 +1,13 @@
+# Exclude noise and the large nested duplicate source tree from the build context.
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
+# Nested duplicate copy of the repo that is not needed for install/tests.
+src/sdk-python
