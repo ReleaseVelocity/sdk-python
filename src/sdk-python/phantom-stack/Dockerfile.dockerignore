@@ -1,0 +1,13 @@
+# Build-context excludes (override). Keep the context small and reproducible.
+**/__pycache__
+**/*.pyc
+.git
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+build
+dist
+.venv
+.coverage*
+# Nested duplicate tree shipped in the repo (not the real package source).
+src/sdk-python
