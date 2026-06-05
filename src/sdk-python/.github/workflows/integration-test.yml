@@ -8,12 +8,36 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip integration tests on Dependabot PRs.
+    #
+    # Dependabot PRs run with the Dependabot secrets scope, which is separate
+    # from the Actions secrets scope. `secrets.STRANDS_INTEG_TEST_ROLE` is not
+    # available there and resolves to an empty string, which causes
+    # aws-actions/configure-aws-credentials to fail after 12 retries with
+    # "Credentials could not be loaded". Beyond the failure noise, running
+    # integration tests against AWS for arbitrary dependency-bumped code under
+    # `pull_request_target` is also a known security risk, so dependency PRs
+    # should not exercise this credentialed workflow.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Validate integration test role secret is configured
+        # Fail fast (instead of waiting for a 12-attempt credential retry loop)
+        # if the IAM role secret is missing or empty for this trigger context.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty for this run."
+            echo "::error::This typically happens when the workflow is triggered in a context that does not have access to the Actions secret (for example, Dependabot PRs use a separate Dependabot secrets scope)."
+            echo "::error::Configure the secret in the appropriate scope or guard the job with an 'if:' condition for the unsupported trigger."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
