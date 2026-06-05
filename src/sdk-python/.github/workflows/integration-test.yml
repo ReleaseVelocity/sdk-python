@@ -14,6 +14,16 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Repository secret STRANDS_INTEG_TEST_ROLE is missing or empty."
+            echo "::error::Set it under Settings -> Secrets and variables -> Actions to a valid IAM role ARN (arn:aws:iam::<account-id>:role/<role-name>)."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
