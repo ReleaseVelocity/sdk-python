@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    container_name: sdk-python
+    environment:
+      # Default AWS test creds so boto3/moto-backed tests run without real creds
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    working_dir: /app
+    command: sleep infinity
