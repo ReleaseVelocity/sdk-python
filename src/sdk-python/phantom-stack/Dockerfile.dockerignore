@@ -1,0 +1,13 @@
+# Build-context excludes for the phantom-stack image. Keep src/, tests/, and
+# pyproject.toml IN the context (they are required); only drop heavy/irrelevant
+# artifacts so the editable install and tests still work.
+**/.git
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+**/build
+**/dist
+phantom-stack
