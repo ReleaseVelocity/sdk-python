@@ -8,12 +8,28 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip integration tests for PRs from forks (including Dependabot), since
+    # repository secrets such as STRANDS_INTEG_TEST_ROLE are not exposed to
+    # workflow runs originating from forked repositories. Without the role ARN
+    # the configure-aws-credentials step otherwise retries 12 times before
+    # failing with a confusing "Could not load credentials from any providers"
+    # error. merge_group events are still allowed because they always run in
+    # the upstream repository context where secrets are available.
+    if: >-
+      github.event_name == 'merge_group' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Validate role secret
+        run: |
+          if [ -z "${{ secrets.STRANDS_INTEG_TEST_ROLE }}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set for this run. This typically happens when the workflow is triggered by a fork or Dependabot PR where repository secrets are not exposed. Configure the secret at the repository or environment level, or restrict this workflow to runs where the secret is available."
+            exit 1
+          fi
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
