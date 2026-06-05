@@ -1,0 +1,14 @@
+# Build-context excludes. Keep the image lean but include everything needed
+# to run tests and dev tooling.
+.git
+**/__pycache__
+*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
+# Avoid the accidental nested duplicate tree shipped in the repo.
+src/sdk-python
