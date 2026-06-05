@@ -1,8 +1,0 @@
-# Exclude the nested duplicate project tree to keep the build context small
-src/sdk-python
-**/__pycache__
-**/*.pyc
-.venv
-build
-dist
-phantom-stack
