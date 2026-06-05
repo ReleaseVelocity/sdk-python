@@ -1,0 +1,13 @@
+# Ignore the stray nested duplicate of the whole project tree.
+src/sdk-python
+# Caches / build artifacts
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.git
+build
+dist
+.venv
+phantom-stack
