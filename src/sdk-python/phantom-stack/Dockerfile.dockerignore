@@ -1,0 +1,12 @@
+# Build context is the project root. Exclude noise and the nested duplicate copy.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+# Nested duplicate project copy — not part of the canonical package.
+src/sdk-python
