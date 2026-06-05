@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-agents-sdk-python
+    container_name: strands-sdk-python
+    environment:
+      # Avoid real AWS calls; tests use moto with these dummy creds.
+      AWS_ACCESS_KEY_ID: testing
+      AWS_SECRET_ACCESS_KEY: testing
+      AWS_DEFAULT_REGION: us-west-2
+    working_dir: /app
+    command: ["sleep", "infinity"]
