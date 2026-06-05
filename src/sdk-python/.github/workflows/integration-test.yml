@@ -9,11 +9,33 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip Dependabot-authored pull requests. Workflows triggered by
+    # `pull_request_target` against Dependabot branches do not have access to
+    # regular repository secrets (Dependabot PRs use a separate `dependabot`
+    # secret scope), so `secrets.STRANDS_INTEG_TEST_ROLE` resolves to an empty
+    # string and `aws-actions/configure-aws-credentials` fails after retrying
+    # for ~90 seconds. Dependency bumps are covered by the standard PR/Push
+    # workflow instead.
+    if: ${{ github.actor != 'dependabot[bot]' }}
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        # Fail fast with a clear message when the integration-test role secret
+        # is not exposed to the run (e.g. fork PRs or any other context where
+        # the secret is unavailable). This converts an opaque ~90s retry storm
+        # inside `configure-aws-credentials` into an immediate, actionable
+        # failure.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Missing STRANDS_INTEG_TEST_ROLE secret. This workflow runs on pull_request_target and requires the integration-test IAM role to be exposed to the run context. Likely cause: the PR is from a fork or other context where repository secrets are not available."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
