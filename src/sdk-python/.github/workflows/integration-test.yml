@@ -9,6 +9,14 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Bind to a GitHub Environment so that secrets (notably
+    # STRANDS_INTEG_TEST_ROLE) are scoped to this environment and are
+    # reliably exposed for pull_request_target / merge_group / dependabot
+    # runs. Without an environment binding, repo-level secrets can be
+    # absent in those contexts, which manifests as configure-aws-credentials
+    # being invoked with an empty role-to-assume and failing with
+    # "Could not load credentials from any providers".
+    environment: integ-test
     permissions:
       id-token: write
       pull-requests: read
