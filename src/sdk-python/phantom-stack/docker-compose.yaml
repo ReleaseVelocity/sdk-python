@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    image: app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    working_dir: /app
+    # Mount the project source for live development. The editable install and
+    # installed dependencies live in the image's site-packages, so they persist.
+    volumes:
+      - ..:/app
+    command: ["sleep", "infinity"]
