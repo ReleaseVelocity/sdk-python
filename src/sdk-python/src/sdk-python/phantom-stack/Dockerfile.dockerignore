@@ -1,0 +1,15 @@
+# Build-context exclusions for the phantom-stack image build.
+# The project ships no .dockerignore of its own; this keeps the context lean
+# without touching project files.
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage*
+build
+dist
+.venv
+.env
+.git
+phantom-stack
