@@ -1,0 +1,12 @@
+# Override: keep everything needed at build time. We intentionally do NOT
+# exclude tests/configs since the container is for development & testing.
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
