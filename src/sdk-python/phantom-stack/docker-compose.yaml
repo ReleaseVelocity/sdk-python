@@ -1,0 +1,20 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    image: strands-sdk-python
+    container_name: strands-sdk-python
+    working_dir: /app
+    environment:
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    volumes:
+      # Mount the project for a live development workflow. The package is
+      # installed editable (-e) via a .pth in site-packages pointing at
+      # /app/src, so source/test edits are picked up immediately.
+      - ..:/app
+    command: ["sleep", "infinity"]
