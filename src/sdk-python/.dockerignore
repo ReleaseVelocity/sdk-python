@@ -1,0 +1,13 @@
+# Exclude the recursive duplicate copy of the project and caches/build
+# artifacts to keep the build context small and avoid confusing the installer.
+src/sdk-python
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+.venv
+.git
+phantom-stack

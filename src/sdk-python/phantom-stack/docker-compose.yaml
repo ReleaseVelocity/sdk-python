@@ -1,0 +1,16 @@
+# Build context is the project root (parent of phantom-stack).
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-agents-dev
+    container_name: strands-agents-sdk-python
+    environment:
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Sane defaults so AWS-backed unit tests (moto) have credentials present.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    working_dir: /app
+    command: ["sleep", "infinity"]
