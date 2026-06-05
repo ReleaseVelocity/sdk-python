@@ -9,11 +9,33 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Bind to the `manual-approval` environment so environment-scoped secrets
+    # (e.g. STRANDS_INTEG_TEST_ROLE) are injected into this job. Without this,
+    # the secret reference resolves to an empty string under pull_request_target
+    # / Dependabot contexts and aws-actions/configure-aws-credentials fails with
+    # "Could not load credentials from any providers".
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        # Fail fast with a clear message if STRANDS_INTEG_TEST_ROLE is not
+        # available to this run (e.g. fork PR, missing environment binding,
+        # or Dependabot context where the secret has not been provisioned).
+        # This avoids the ~2 minutes of retry loops inside
+        # aws-actions/configure-aws-credentials.
+        # The `secrets` context cannot be used in a step-level `if:`, so we
+        # forward the secret to an env var and check it inside the script.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty. This typically means the workflow is running in a context where the 'manual-approval' environment secret is not injected (fork PR, Dependabot, or missing environment binding). Aborting before AWS credential configuration."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
