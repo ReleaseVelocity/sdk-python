@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      # Default fake AWS creds so boto3-based code/tests don't probe metadata
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: testing
+      AWS_SECRET_ACCESS_KEY: testing
