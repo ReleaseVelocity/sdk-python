@@ -14,6 +14,27 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          # Fail fast with a clear, actionable message when the integration-test
+          # role secret is empty. This commonly happens for `pull_request_target`
+          # runs originating from Dependabot PRs, because Dependabot-authored PRs
+          # do NOT receive standard repository Actions secrets — they must be
+          # set as Dependabot secrets (Settings -> Secrets and variables ->
+          # Dependabot). Without this preflight, the failure surfaces as an
+          # opaque "Could not load credentials from any providers" error after
+          # 12 retries inside aws-actions/configure-aws-credentials.
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error title=Missing secret::STRANDS_INTEG_TEST_ROLE is empty in this workflow run's context."
+            echo "This is expected for Dependabot-authored PRs unless STRANDS_INTEG_TEST_ROLE"
+            echo "(and STRANDS_TEST_API_KEYS_SECRET_NAME) are also configured as Dependabot secrets."
+            echo "See: https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions#accessing-secrets"
+            echo "Triggering event: ${GITHUB_EVENT_NAME} | actor: ${GITHUB_ACTOR} | head ref: ${GITHUB_HEAD_REF}"
+            exit 78
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
