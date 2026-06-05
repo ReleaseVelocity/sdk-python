@@ -1,0 +1,11 @@
+# Avoid copying the recursive nested self-copy and VCS/cache artifacts.
+src/sdk-python
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+phantom-stack
