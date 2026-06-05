@@ -14,6 +14,18 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test role secret is configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set or is empty."
+            echo "::error::This secret must contain the IAM role ARN that the workflow will assume via OIDC."
+            echo "::error::Verify that the secret exists at the repository (or organization) level and is exposed to this workflow context."
+            echo "::error::If the secret is environment-scoped, declare 'environment:' on this job so the secret is available."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
