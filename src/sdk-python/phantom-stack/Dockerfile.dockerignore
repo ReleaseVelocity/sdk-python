@@ -1,0 +1,15 @@
+# Exclude the nested duplicate project tree (mount artifact)
+src/sdk-python/
+# Exclude our own docker files from the build context
+phantom-stack/
+# Caches and build artifacts
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+build/
+dist/
+.venv/
+.git/
