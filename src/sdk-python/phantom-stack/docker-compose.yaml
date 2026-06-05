@@ -1,0 +1,10 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python-app
+    command: sleep infinity
+    environment:
+      - AWS_DEFAULT_REGION=us-west-2
