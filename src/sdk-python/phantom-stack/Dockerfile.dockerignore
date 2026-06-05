@@ -1,0 +1,13 @@
+.git
+phantom-stack
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+uv.lock
+# Exclude the accidental nested duplicate copy of the project tree
+src/sdk-python
