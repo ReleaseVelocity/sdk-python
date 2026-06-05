@@ -1,0 +1,12 @@
+# Exclude the nested duplicate copy and common cruft from the build context.
+src/sdk-python
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+.pytest_cache
+.mypy_cache
+.ruff_cache
+phantom-stack
