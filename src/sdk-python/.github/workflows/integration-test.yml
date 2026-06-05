@@ -9,6 +9,12 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip Dependabot-authored PRs: GitHub does not expose Actions repository
+    # secrets (e.g. STRANDS_INTEG_TEST_ROLE) to pull_request_target runs from
+    # Dependabot branches, so the OIDC role-to-assume would expand to an empty
+    # string and the configure-aws-credentials step would fail deterministically.
+    # Dependency-bump PRs are exercised by the push/merge_group triggers instead.
+    if: github.actor != 'dependabot[bot]'
     permissions:
       id-token: write
       pull-requests: read
