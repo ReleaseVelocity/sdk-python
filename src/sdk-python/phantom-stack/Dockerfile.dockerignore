@@ -1,0 +1,16 @@
+# Exclude the duplicated nested project tree (build artifact) to keep the
+# context small and avoid confusing the editable install.
+src/sdk-python
+
+# Caches / build artifacts
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+phantom-stack
