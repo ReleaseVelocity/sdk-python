@@ -1,0 +1,10 @@
+# Keep build context lean; these are regenerated inside the container.
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.git
