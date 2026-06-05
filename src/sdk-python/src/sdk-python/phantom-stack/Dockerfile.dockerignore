@@ -1,0 +1,11 @@
+# Exclude the nested duplicate copy of the project to keep the build context lean.
+src/sdk-python/
+# Common noise
+**/__pycache__/
+**/*.pyc
+.git/
+.venv/
+build/
+dist/
+*.egg-info/
+phantom-stack/
