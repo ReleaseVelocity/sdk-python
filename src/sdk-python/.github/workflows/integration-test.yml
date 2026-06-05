@@ -8,6 +8,14 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip integration tests for Dependabot PRs: Dependabot-triggered runs on
+    # `pull_request_target` do not have access to the `STRANDS_INTEG_TEST_ROLE`
+    # secret (it is registered as an Actions secret, not a Dependabot secret),
+    # so `aws-actions/configure-aws-credentials` would render an empty
+    # `role-to-assume` and fail with "Could not load credentials from any
+    # providers". Dependency-only PRs do not need integration test coverage
+    # against AWS.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
