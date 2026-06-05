@@ -1,0 +1,19 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    working_dir: /app
+    environment:
+      # Credentials for moto-mocked AWS calls used in the unit test suite.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    # Mount the source so code changes are reflected live in the editable install.
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
+    command: ["sleep", "infinity"]
