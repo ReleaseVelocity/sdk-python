@@ -1,0 +1,12 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      - AWS_DEFAULT_REGION=us-west-2
+      - LOG_LEVEL=INFO
