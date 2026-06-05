@@ -9,6 +9,19 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Gate the job on the `manual-approval` GitHub Environment so that:
+    # 1. PRs from forks / Dependabot require an explicit approval before any
+    #    code from the PR head is checked out or executed (defense-in-depth
+    #    for `pull_request_target`).
+    # 2. The `STRANDS_INTEG_TEST_ROLE` (and `STRANDS_TEST_API_KEYS_SECRET_NAME`)
+    #    secrets are scoped to this environment and are reliably exposed to
+    #    runs originating from `pull_request_target` and `merge_group`.
+    #    Without an environment, repository secrets are not available to
+    #    Dependabot-triggered runs (Dependabot has a separate secret scope),
+    #    which causes `secrets.STRANDS_INTEG_TEST_ROLE` to resolve to an empty
+    #    string and the configure-aws-credentials action to fall back to the
+    #    default provider chain on a hosted runner (no credentials available).
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
