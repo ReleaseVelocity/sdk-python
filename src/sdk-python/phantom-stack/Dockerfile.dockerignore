@@ -1,0 +1,13 @@
+# Keep build context lean. Source under src/ and tests/ are still copied.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+*.bak
+.DS_Store
