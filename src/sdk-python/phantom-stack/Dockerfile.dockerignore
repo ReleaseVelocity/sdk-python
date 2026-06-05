@@ -1,0 +1,10 @@
+# Override the project's exclusions so tests and configs are available at runtime.
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
