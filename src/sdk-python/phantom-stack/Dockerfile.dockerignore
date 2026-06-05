@@ -1,0 +1,12 @@
+# Build context override for phantom-stack. Keep the context lean.
+.git
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.venv
+build
+dist
+phantom-stack
+# Exclude the duplicated nested copy of the project to avoid bloat/confusion
+src/sdk-python
