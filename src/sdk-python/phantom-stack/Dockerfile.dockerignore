@@ -1,0 +1,13 @@
+# Exclude the duplicated nested project copy (real package is src/strands).
+src/sdk-python
+# Exclude our own tooling directory and VCS / caches.
+phantom-stack
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
