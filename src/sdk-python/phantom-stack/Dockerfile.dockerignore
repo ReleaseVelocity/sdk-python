@@ -1,0 +1,11 @@
+# Exclude the duplicated nested copy of the project tree.
+src/sdk-python
+**/__pycache__
+*.pyc
+.venv
+build
+dist
+.pytest_cache
+.mypy_cache
+.ruff_cache
+phantom-stack
