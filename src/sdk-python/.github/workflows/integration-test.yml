@@ -9,11 +9,31 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip the job in contexts where Actions secrets are not exposed and the
+    # AWS role assumption would deterministically fail (e.g., Dependabot-
+    # triggered runs, PRs from forks). Without this guard, the
+    # configure-aws-credentials step retries 12 times with a misleading
+    # "Could not load credentials from any providers" error before failing.
+    # `merge_group` events always run with full secret access, so allow those
+    # through unconditionally.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty. Ensure the secret is configured for this workflow context (Actions secrets, and Dependabot secrets if applicable)."
+            exit 1
+          fi
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
