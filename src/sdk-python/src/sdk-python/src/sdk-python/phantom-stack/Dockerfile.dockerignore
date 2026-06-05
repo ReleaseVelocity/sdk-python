@@ -1,0 +1,17 @@
+# Dockerignore for the phantom-stack build context (project root: /workspace/src/sdk-python)
+# Keep the build context lean and avoid copying the recursive nested duplicate
+# directory (src/sdk-python) and local caches/artifacts into the image.
+
+src/sdk-python
+**/__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage*
+build
+dist
+.venv
+.env
+.git
+phantom-stack
