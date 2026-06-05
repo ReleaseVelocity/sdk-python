@@ -1,0 +1,10 @@
+# Exclude nested duplicate copy of the project to avoid recursion/bloat
+src/sdk-python
+# Common caches
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.venv
+build
+dist

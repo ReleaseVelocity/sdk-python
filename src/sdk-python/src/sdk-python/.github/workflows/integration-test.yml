@@ -1,0 +1,67 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      # Detect whether the OIDC role secret is available before attempting to
+      # configure AWS credentials. On `pull_request_target` runs from forks or
+      # Dependabot, repository secrets are withheld by GitHub's secret-isolation
+      # policy and `secrets.STRANDS_INTEG_TEST_ROLE` resolves to an empty string,
+      # which causes `aws-actions/configure-aws-credentials` to hard-fail with
+      # "Credentials could not be loaded". Detecting this up front lets us skip
+      # the integration tests with a clear warning instead of failing the run.
+      - name: Check secret availability
+        id: check-secrets
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::warning::STRANDS_INTEG_TEST_ROLE secret is not available (expected for pull_request_target runs from forks or Dependabot, where repository secrets are withheld). Skipping integration tests."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure Credentials
+        if: steps.check-secrets.outputs.available == 'true'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        if: steps.check-secrets.outputs.available == 'true'
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        if: steps.check-secrets.outputs.available == 'true'
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        if: steps.check-secrets.outputs.available == 'true'
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        if: steps.check-secrets.outputs.available == 'true'
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
