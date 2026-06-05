@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python
+    working_dir: /app
+    environment:
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Default AWS creds so moto-backed tests and boto3 clients init cleanly.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    command: ["sleep", "infinity"]
