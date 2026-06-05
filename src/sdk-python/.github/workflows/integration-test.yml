@@ -9,6 +9,19 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip Dependabot PRs and PRs from forks: in those contexts the repository
+    # secrets (e.g. STRANDS_INTEG_TEST_ROLE) and elevated GITHUB_TOKEN
+    # permissions (id-token: write) are intentionally withheld by GitHub, so
+    # the AWS credentials configuration step cannot succeed and the job fails
+    # deterministically with an opaque "Could not load credentials" error
+    # after exhausting all retries. Skipping the job in those contexts avoids
+    # the false-positive failure while preserving the existing security
+    # posture for trusted internal PRs and merge_group events.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       id-token: write
       pull-requests: read
