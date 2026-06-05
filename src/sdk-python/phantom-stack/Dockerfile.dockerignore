@@ -1,0 +1,13 @@
+# Exclude the recursive nested copy of the project to keep the build context small.
+src/sdk-python/
+phantom-stack/
+.git/
+**/__pycache__/
+**/*.pyc
+.venv/
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
