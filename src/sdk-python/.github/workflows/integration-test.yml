@@ -14,6 +14,20 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set or is empty."
+            echo "This typically means one of the following:"
+            echo "  1. The secret is not defined at the repository (or organization) level."
+            echo "  2. The secret is scoped to a GitHub Environment that this job does not declare via 'environment:'."
+            echo "  3. The workflow was triggered by a pull_request_target from a fork, in which case GitHub withholds secrets."
+            echo "Aborting before invoking aws-actions/configure-aws-credentials to avoid a long retry loop."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
