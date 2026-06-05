@@ -1,0 +1,14 @@
+# Override dockerignore for the phantom-stack build context.
+# Exclude local build artifacts and virtual envs so they don't bloat the image
+# or shadow the in-container editable install. Tests are intentionally INCLUDED.
+.venv
+venv
+build
+dist
+**/__pycache__
+**/*.pyc
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.git
+.coverage*
