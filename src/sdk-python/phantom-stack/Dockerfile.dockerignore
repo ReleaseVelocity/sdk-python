@@ -1,0 +1,12 @@
+# Build-context excludes for the phantom-stack image.
+# Keep the context small and avoid copying host-side virtualenvs/caches.
+**/.git
+**/.venv
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+**/__pycache__
+**/*.pyc
+build
+dist
+phantom-stack
