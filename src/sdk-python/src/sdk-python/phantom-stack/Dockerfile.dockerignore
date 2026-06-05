@@ -1,0 +1,9 @@
+.git
+phantom-stack
+**/__pycache__
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
