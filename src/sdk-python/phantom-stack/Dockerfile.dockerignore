@@ -1,0 +1,9 @@
+# Keep the build context lean; everything needed is copied explicitly.
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+build
+dist
