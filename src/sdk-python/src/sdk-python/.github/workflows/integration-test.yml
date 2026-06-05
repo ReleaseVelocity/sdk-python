@@ -1,0 +1,73 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Skip integration tests on Dependabot-authored pull requests.
+    #
+    # Rationale:
+    #   * pull_request_target events from Dependabot do NOT receive regular
+    #     repository/organization Actions secrets by default; GitHub scopes
+    #     them under a separate Dependabot secrets store. As a result,
+    #     ${{ secrets.STRANDS_INTEG_TEST_ROLE }} expands to an empty string,
+    #     causing aws-actions/configure-aws-credentials to fail with
+    #     "Could not load credentials from any providers".
+    #   * Even if the secret were exposed via the Dependabot scope, running
+    #     AWS-authenticated integration tests against unreviewed dependency
+    #     bumps under a privileged OIDC role is undesirable from a supply-
+    #     chain security standpoint.
+    # Maintainers can manually re-run / approve the integration test
+    # workflow on Dependabot PRs after reviewing the dependency change.
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Validate required secrets are present
+        # Fail fast with a clear, actionable error if STRANDS_INTEG_TEST_ROLE
+        # is empty for any reason. Without this, the next step fails with the
+        # opaque message "Could not load credentials from any providers".
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set or is empty for this workflow run."
+            echo "::error::This typically happens when the workflow is triggered in a context that does not have access to repository Actions secrets (e.g. forks or Dependabot events)."
+            echo "::error::Ensure the secret is configured under Settings -> Secrets and variables -> Actions, and that the triggering event has access to it."
+            exit 1
+          fi
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
