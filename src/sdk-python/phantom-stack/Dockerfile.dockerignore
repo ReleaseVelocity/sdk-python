@@ -1,0 +1,12 @@
+# Build context is the project root. Exclude heavy/irrelevant paths.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+# Nested duplicate tree that is not the real package source.
+src/sdk-python
