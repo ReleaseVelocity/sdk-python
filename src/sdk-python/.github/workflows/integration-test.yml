@@ -9,6 +9,16 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip integration tests for PRs that cannot access org/repo secrets
+    # (e.g. dependabot PRs and PRs from forks). Without this guard, the
+    # `Configure Credentials` step receives an empty `role-to-assume` and
+    # fails after exhausting all retries with "Could not load credentials
+    # from any providers."
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       id-token: write
       pull-requests: read
