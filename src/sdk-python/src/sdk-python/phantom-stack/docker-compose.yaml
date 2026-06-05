@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+    container_name: strands-sdk-python
+    working_dir: /app
+    environment:
+      # Default mock AWS creds so boto3/moto-backed tests don't probe metadata.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    command: ["sleep", "infinity"]

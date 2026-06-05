@@ -1,0 +1,11 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+# Exclude the duplicated nested copy of the project to keep context small.
+src/sdk-python
