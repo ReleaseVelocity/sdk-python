@@ -1,0 +1,13 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+venv
+build
+dist
+*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+# The nested duplicate source tree is not part of the real package.
+src/sdk-python
