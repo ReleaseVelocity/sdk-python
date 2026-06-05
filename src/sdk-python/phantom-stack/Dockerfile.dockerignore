@@ -1,0 +1,8 @@
+# Override dockerignore for the build context. Keep everything needed for an
+# editable install and the full test suite. Only exclude noise.
+**/__pycache__
+**/*.pyc
+.git
+build/
+dist/
+*.egg-info
