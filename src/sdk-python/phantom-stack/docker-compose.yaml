@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    container_name: sdk-python
+    environment:
+      - SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0
+      # Keep AWS clients from looking for real credentials during unit tests.
+      - AWS_DEFAULT_REGION=us-east-1
+    working_dir: /app
+    command: ["sleep", "infinity"]

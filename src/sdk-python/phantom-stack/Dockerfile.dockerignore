@@ -1,0 +1,15 @@
+# Exclude the nested duplicate copy of the project to keep the build context small.
+src/sdk-python
+
+# Standard Python / VCS cruft
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+phantom-stack
