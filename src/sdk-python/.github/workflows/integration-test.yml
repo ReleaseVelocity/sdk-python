@@ -1,0 +1,61 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Skip runs triggered by Dependabot: GitHub Actions secrets (notably
+    # STRANDS_INTEG_TEST_ROLE) are not exposed to pull_request_target runs
+    # originating from Dependabot, which causes aws-actions/configure-aws-credentials
+    # to fail with "Could not load credentials from any providers" after exhausting
+    # its internal retries (~2.5 minutes). Maintainers should run integration
+    # tests manually for Dependabot PRs after review.
+    if: github.actor != 'dependabot[bot]'
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify integration test role is configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is empty or not exposed to this run."
+            echo "::error::This is typically caused by the secret being unavailable to the triggering context (e.g. a fork PR, or a Dependabot run when the secret is not also configured under Dependabot secrets)."
+            echo "::error::Verify the secret exists at repo/org level and is exposed to the relevant trigger context."
+            exit 1
+          fi
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
