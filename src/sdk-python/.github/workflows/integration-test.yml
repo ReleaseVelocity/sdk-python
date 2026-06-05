@@ -8,6 +8,15 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip on Dependabot PRs: GitHub does not expose Actions secrets to
+    # Dependabot-authored pull_request_target runs, so STRANDS_INTEG_TEST_ROLE
+    # would resolve to an empty string and the AWS credential configuration
+    # step would deterministically fail. Exposing the role ARN to the
+    # Dependabot secrets scope is also a known supply-chain risk for
+    # pull_request_target workflows. Dependency bumps are revalidated by the
+    # standard test suite; integration tests can be re-run manually after
+    # review if needed.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
