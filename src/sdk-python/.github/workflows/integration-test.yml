@@ -14,6 +14,20 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not set or is empty for this workflow run."
+            echo "::error::This typically happens when the workflow is triggered from a Dependabot or fork PR,"
+            echo "::error::because GitHub does not pass repository secrets to those contexts by default."
+            echo "::error::To fix: ensure STRANDS_INTEG_TEST_ROLE is configured under Settings > Secrets and variables > Actions"
+            echo "::error::(and under the Dependabot secrets tab if Dependabot PRs need to run this workflow),"
+            echo "::error::or restrict this workflow to internal branches/maintainer-approved triggers."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
