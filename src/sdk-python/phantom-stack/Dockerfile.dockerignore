@@ -1,0 +1,12 @@
+# Exclude the duplicated nested project tree to keep the build context small.
+src/sdk-python
+phantom-stack
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
