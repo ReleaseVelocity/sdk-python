@@ -8,12 +8,36 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip integration tests for Dependabot PRs. GitHub does not expose
+    # repository Actions secrets to events triggered by Dependabot, so
+    # `secrets.STRANDS_INTEG_TEST_ROLE` is empty and the AWS credential
+    # configuration step would otherwise fail with a 2-minute STS retry
+    # storm. Dependabot PRs that need integration coverage can be re-run
+    # manually by a maintainer once the changes have been reviewed.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Validate required secrets
+        # Fail fast with a clear message when the OIDC role secret is not
+        # available in the current event context. Without this, the next
+        # step retries STS for ~2 minutes before giving up with a vague
+        # "Could not load credentials from any providers" error.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty in this run's context."
+            echo "This typically means the workflow was triggered in a context where"
+            echo "GitHub does not expose repository Actions secrets (for example a"
+            echo "Dependabot-triggered event). Configure a Dependabot-scoped secret"
+            echo "or run this workflow from a context that has access to the secret."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
