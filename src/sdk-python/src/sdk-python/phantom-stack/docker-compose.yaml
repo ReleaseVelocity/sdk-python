@@ -1,0 +1,12 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python-dev
+    container_name: sdk-python-dev
+    environment:
+      # Provide dummy AWS creds/region so boto3-backed code/tests behave under moto.
+      AWS_DEFAULT_REGION: us-west-2
+    working_dir: /app
+    command: ["sleep", "infinity"]
