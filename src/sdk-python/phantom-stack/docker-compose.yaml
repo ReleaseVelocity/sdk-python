@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    image: app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    environment:
+      # Avoid real AWS calls during tests; moto/test fixtures supply credentials
+      - AWS_DEFAULT_REGION=us-west-2
+      - HATCH_VCS_PRETEND_VERSION=0.0.0+dev
+    working_dir: /app
+    command: sleep infinity
