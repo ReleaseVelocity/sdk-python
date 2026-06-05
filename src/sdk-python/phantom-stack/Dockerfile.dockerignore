@@ -1,0 +1,12 @@
+# Exclude the nested duplicate copy of the repo and build artifacts/caches.
+src/sdk-python
+**/__pycache__
+*.pyc
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+phantom-stack
