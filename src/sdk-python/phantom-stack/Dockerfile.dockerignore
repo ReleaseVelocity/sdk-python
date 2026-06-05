@@ -1,0 +1,11 @@
+# Build context is the project root (..). Exclude noise to keep context small.
+.git
+**/__pycache__
+**/*.pyc
+build
+dist
+*.egg-info
+.venv
+# The recursive self-copy artifact under src/sdk-python is not part of the package.
+src/sdk-python
+phantom-stack
