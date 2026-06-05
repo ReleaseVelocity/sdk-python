@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    # Allow editable source changes from the host to reflect inside the container.
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
+    environment:
+      - LOG_LEVEL=DEBUG
+    command: ["sleep", "infinity"]
