@@ -1,0 +1,10 @@
+# Reduce build context: skip the duplicated nested tree and caches.
+src/sdk-python/
+**/__pycache__/
+**/*.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+.venv/
