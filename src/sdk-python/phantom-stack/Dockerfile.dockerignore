@@ -1,0 +1,14 @@
+# Override: ensure nothing critical is excluded at build time.
+# Exclude only caches/build artifacts and the nested duplicate source tree.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+src/sdk-python
