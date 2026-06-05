@@ -1,0 +1,11 @@
+# Exclude the nested duplicate source tree (packaging artifact) and our own stack dir.
+src/sdk-python
+phantom-stack
+**/__pycache__
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
