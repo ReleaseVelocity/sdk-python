@@ -1,0 +1,17 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        HATCH_VCS_PRETEND_VERSION: "0.0.0"
+    image: strands-sdk-python
+    container_name: strands-sdk-python
+    environment:
+      HATCH_VCS_PRETEND_VERSION: "0.0.0"
+      # Avoid any real AWS calls during unit tests; tests use moto/mocks.
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ACCESS_KEY_ID: testing
+      AWS_SECRET_ACCESS_KEY: testing
+    working_dir: /app
+    command: ["sleep", "infinity"]
