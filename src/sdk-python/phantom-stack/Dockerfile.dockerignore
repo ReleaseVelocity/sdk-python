@@ -1,0 +1,12 @@
+# Build context hygiene for phantom-stack image build.
+# Exclude local caches/artifacts but keep all source, tests, and configs.
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.git
+phantom-stack
