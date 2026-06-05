@@ -8,12 +8,46 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip the job for contexts where the STRANDS_INTEG_TEST_ROLE secret is
+    # not exposed by GitHub. In those cases the configure-aws-credentials
+    # step would otherwise burn 12 retries (~90s) before failing with the
+    # opaque message "Could not load credentials from any providers".
+    #
+    # Secrets are NOT exposed to:
+    #   * pull_request_target runs triggered by Dependabot (Dependabot has a
+    #     separate secret store under Settings -> Secrets -> Dependabot).
+    #   * pull_request_target runs originating from a forked repository (the
+    #     head repo is different from the base repo).
+    #
+    # merge_group runs and same-repo pull_request_target runs (normal
+    # contributors) continue to execute the integration test gate.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty or not set."
+            echo "::error::This usually means the workflow was triggered in a context"
+            echo "::error::that does not have access to repository Actions secrets"
+            echo "::error::(e.g. a PR from a fork or an untrusted bot account)."
+            echo "::error::Configure the secret under Settings -> Secrets and variables"
+            echo "::error::-> Actions, and ensure the workflow trigger context can"
+            echo "::error::access it."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE is configured."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
