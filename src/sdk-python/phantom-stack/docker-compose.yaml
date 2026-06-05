@@ -1,0 +1,12 @@
+services:
+  sdk-python:
+    image: strands-app:latest
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    environment:
+      # Mock AWS credentials so any boto3 client creation in tests is harmless.
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    command: ["sleep", "infinity"]
