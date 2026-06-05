@@ -1,0 +1,13 @@
+# Keep build context lean — exclude caches and VCS artifacts.
+# (Project has no .dockerignore of its own; this is the phantom-stack override.)
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+phantom-stack
