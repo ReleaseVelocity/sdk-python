@@ -1,0 +1,58 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Attach to the manual-approval environment so that the
+    # STRANDS_INTEG_TEST_ROLE secret (scoped to that environment) only
+    # resolves after a maintainer approves the deployment. This prevents
+    # Dependabot/fork pull_request_target runs from silently rendering
+    # the secret as an empty string and exhausting OIDC retries.
+    environment: manual-approval
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify integration test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty. This typically means the workflow is running in a context where repository/environment secrets are not exposed (e.g. a Dependabot or fork pull_request_target run that has not been approved for the manual-approval environment). Refusing to attempt OIDC credential exchange with an empty role ARN."
+            exit 1
+          fi
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
