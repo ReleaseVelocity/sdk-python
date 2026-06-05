@@ -1,0 +1,9 @@
+# Avoid copying the recursive nested mirror dir and VCS/build noise
+src/sdk-python
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+*.egg-info
+phantom-stack
