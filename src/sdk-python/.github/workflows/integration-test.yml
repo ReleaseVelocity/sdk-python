@@ -14,6 +14,20 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is empty or unavailable to this job."
+            echo "::error::Common causes: (1) the repository secret was never set, (2) the secret is scoped"
+            echo "::error::to an Environment that this job does not declare via 'environment:', or (3) this"
+            echo "::error::run was triggered by 'pull_request_target' from a fork/Dependabot PR which does"
+            echo "::error::not receive secrets. See .github/workflows/integration-test.yml for context."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE secret is present (value masked)."
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
