@@ -1,0 +1,9 @@
+# Exclude the nested duplicate tree to keep the build context lean.
+src/sdk-python
+phantom-stack
+**/__pycache__
+**/*.pyc
+.git
+build
+dist
+.venv
