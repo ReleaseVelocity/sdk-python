@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    image: strands-sdk-python:latest
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PRETEND_VERSION: "1.0.0"
+    container_name: strands-sdk-python
+    environment:
+      # Defaults used by the test suite (moto mocks AWS); overridable per env.
+      AWS_DEFAULT_REGION: "us-west-2"
+      LOG_LEVEL: "INFO"
+    working_dir: /app
+    command: ["sleep", "infinity"]
