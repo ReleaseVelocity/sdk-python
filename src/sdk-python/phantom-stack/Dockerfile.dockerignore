@@ -1,0 +1,14 @@
+# Build-context exclusions (does not modify the project's own ignore rules).
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+# Nested duplicate source tree; the real package lives at src/strands.
+src/sdk-python
+phantom-stack
