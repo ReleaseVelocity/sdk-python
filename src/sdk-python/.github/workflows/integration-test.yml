@@ -1,0 +1,78 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Skip when the run cannot possibly have access to repository Actions secrets:
+    #   * Dependabot-authored pull_request_target runs use a separate Dependabot
+    #     secret scope and do NOT receive regular Actions secrets, so
+    #     ${{ secrets.STRANDS_INTEG_TEST_ROLE }} expands to an empty string and
+    #     aws-actions/configure-aws-credentials burns 12 retries before failing
+    #     with "Could not load credentials from any providers".
+    #   * pull_request_target runs from forks also have secrets withheld by
+    #     GitHub for security; without role-to-assume the OIDC handshake never
+    #     starts.
+    # merge_group events and same-repo (non-Dependabot) pull_request_target
+    # runs continue to execute normally.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+        github.actor != 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository)
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify integ test role secret is available
+        # Fail fast with a clear, actionable error if the secret is empty for
+        # any reason that the job-level guard above does not already exclude
+        # (e.g. environment-scoped secret with no matching environment, or a
+        # newly added trigger context). Replaces the opaque ~62s "12 retry"
+        # failure from configure-aws-credentials with a single explicit message
+        # that points at the real cause.
+        env:
+          ROLE_TO_ASSUME: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${ROLE_TO_ASSUME}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty for this run."
+            echo "::error::This usually means the secret is not exposed to the current trigger context"
+            echo "::error::(e.g. fork PR or environment-scoped secret with no matching environment)."
+            echo "::error::Configure the secret at Settings -> Secrets and variables, or attach the job to the appropriate Environment."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE is present (length: ${#ROLE_TO_ASSUME})."
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
