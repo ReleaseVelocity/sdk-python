@@ -1,0 +1,11 @@
+# Avoid copying the redundant nested duplicate project tree
+src/sdk-python/
+
+# Build/cache artifacts
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+build/
+dist/
+*.egg-info/
+phantom-stack/
