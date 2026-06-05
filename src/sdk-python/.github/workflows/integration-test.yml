@@ -8,12 +8,29 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip for Dependabot-triggered runs: Dependabot workflows read from the separate
+    # "Dependabot secrets" scope, which does not contain STRANDS_INTEG_TEST_ROLE. Without
+    # this guard, every Dependabot PR exhausts 12 OIDC retries with
+    # "Could not load credentials from any providers" before failing.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration test secret is available
+        # Fail fast with a clear message if the role secret is missing/empty. This avoids
+        # ~100s of opaque retries inside aws-actions/configure-aws-credentials when the
+        # secret is not exposed to the run (e.g. wrong secrets scope, deleted/renamed secret).
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty. The workflow cannot assume the AWS role. If this run was triggered by Dependabot, ensure the secret is also defined under Settings -> Secrets and variables -> Dependabot."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
