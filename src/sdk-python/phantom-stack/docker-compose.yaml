@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    container_name: sdk-python
+    environment:
+      # hatch-vcs/setuptools_scm version override (no .git present)
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0+dev"
+      # moto/boto3 test credentials so AWS-backed tests have a region/creds
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    working_dir: /app
+    command: ["sleep", "infinity"]

@@ -1,0 +1,13 @@
+# Build context lives at the project root (compose context: ..).
+# Exclude caches and transient dirs; keep src/, tests/, pyproject.toml.
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+build
+dist
+.coverage*
+.audio_cache
+phantom-stack
