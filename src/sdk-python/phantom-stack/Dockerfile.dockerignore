@@ -1,0 +1,15 @@
+# Exclude VCS metadata, caches, and build artifacts from the build context.
+.git
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+build
+dist
+.coverage*
+# The nested duplicate source tree is not needed for the install/tests.
+src/sdk-python
+# Don't copy the phantom-stack dir into the image.
+phantom-stack
