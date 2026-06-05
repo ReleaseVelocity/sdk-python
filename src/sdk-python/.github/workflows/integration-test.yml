@@ -9,6 +9,13 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip this job when the integration test role secret is not available
+    # (e.g. Dependabot PRs or pull_request_target from forks where org/repo
+    # secrets are not exposed). Without the role ARN, the AWS credentials
+    # action falls through to the default provider chain on a hosted runner
+    # and fails credential bootstrap, blocking the rest of the job for a
+    # reason unrelated to the PR's contents.
+    if: ${{ secrets.STRANDS_INTEG_TEST_ROLE != '' }}
     permissions:
       id-token: write
       pull-requests: read
