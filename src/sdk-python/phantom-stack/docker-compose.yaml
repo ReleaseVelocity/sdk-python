@@ -1,0 +1,10 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    working_dir: /app
+    # Keep the container alive so developers can exec in and run tests/linters.
+    command: ["sleep", "infinity"]
