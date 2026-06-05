@@ -8,12 +8,34 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip Dependabot-authored PRs: GitHub does not expose repository
+    # secrets to Dependabot PR runs, so `secrets.STRANDS_INTEG_TEST_ROLE`
+    # would expand to an empty string and the OIDC step would fail
+    # deterministically with "Could not load credentials from any providers".
+    # Dependency-update PRs do not need to run integration tests against
+    # the AWS account; if they ever do, add the secret under
+    # Settings -> Secrets and variables -> Dependabot.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify integration-test secrets are available
+        # Fail fast (and loudly) if the role secret is missing rather
+        # than letting `aws-actions/configure-aws-credentials` retry for
+        # ~90 seconds before emitting a generic credentials error. This
+        # guards against any trigger context (e.g. forks, other bots)
+        # where `secrets.*` is empty.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::secrets.STRANDS_INTEG_TEST_ROLE is empty. This usually means the workflow is running in a context where repository secrets are not exposed (e.g. a Dependabot PR, or a fork without secret access). Add the secret to the appropriate scope (Settings -> Secrets and variables -> Actions / Dependabot) or skip this workflow for that context."
+            exit 78
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
