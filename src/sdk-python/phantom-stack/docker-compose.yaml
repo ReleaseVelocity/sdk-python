@@ -1,0 +1,17 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    environment:
+      HATCH_VCS_PRETEND_VERSION: "0.0.0+dev"
+      LOG_LEVEL: "INFO"
+      # Tests mock AWS via moto; provide dummy creds/region so boto3 never
+      # tries to reach real endpoints.
+      AWS_DEFAULT_REGION: "us-east-1"
+      AWS_ACCESS_KEY_ID: "testing"
+      AWS_SECRET_ACCESS_KEY: "testing"
+    working_dir: /app
+    command: ["sleep", "infinity"]
