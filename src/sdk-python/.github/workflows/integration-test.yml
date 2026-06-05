@@ -1,0 +1,63 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Bind to the manual-approval environment so environment-scoped secrets
+    # (e.g. STRANDS_INTEG_TEST_ROLE) resolve. Without this, secrets bound to
+    # the environment render as empty for `pull_request_target` events
+    # triggered by forks or Dependabot, which causes
+    # aws-actions/configure-aws-credentials to burn 12 retries on
+    # "Could not load credentials from any providers" before failing.
+    environment: manual-approval
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify required secrets are available
+        # Fail fast with a clear message instead of letting
+        # aws-actions/configure-aws-credentials retry 12 times (~2.5 minutes)
+        # when the role secret has not been provisioned for this trigger
+        # (e.g. fork PR or Dependabot PR without environment access).
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is empty. This typically means the workflow was triggered from a fork or Dependabot PR that does not have access to the manual-approval environment secrets. A maintainer must manually approve / re-run this workflow from a context with access to the secret."
+            exit 1
+          fi
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
