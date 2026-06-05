@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    environment:
+      # Provide moto/AWS defaults so AWS-dependent tests don't hit real services
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-west-2
+      - SETUPTOOLS_SCM_PRETEND_VERSION=1.0.0.dev0
+    working_dir: /app
+    command: sleep infinity
