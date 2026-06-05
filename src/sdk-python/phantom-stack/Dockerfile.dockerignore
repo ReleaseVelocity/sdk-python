@@ -1,0 +1,11 @@
+# Keep build context lean; exclude caches and the phantom-stack dir itself.
+phantom-stack
+**/__pycache__
+**/*.pyc
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.venv
+.coverage*
