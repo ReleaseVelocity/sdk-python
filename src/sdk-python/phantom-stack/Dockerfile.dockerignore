@@ -1,0 +1,12 @@
+# Override dockerignore for the build context (project root).
+# Keep the context lean but ensure pyproject.toml, src/, and tests/ are included.
+**/.git
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/build
+**/dist
+phantom-stack
