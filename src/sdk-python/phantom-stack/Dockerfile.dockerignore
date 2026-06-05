@@ -1,0 +1,11 @@
+# Override: ensure source, tests and manifests are always available at build time.
+.git
+.venv
+__pycache__
+*.pyc
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
