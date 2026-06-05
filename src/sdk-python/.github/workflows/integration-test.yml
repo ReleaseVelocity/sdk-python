@@ -8,6 +8,16 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip for Dependabot PRs and PRs from forks: repository secrets
+    # (including STRANDS_INTEG_TEST_ROLE used for OIDC) are not exposed
+    # to these PRs under pull_request_target, so the AWS credentials step
+    # cannot succeed. Integration tests must be re-run from a maintainer
+    # branch / merge_group context where the secret is available.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     permissions:
       id-token: write
