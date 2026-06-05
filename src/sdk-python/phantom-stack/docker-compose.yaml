@@ -1,0 +1,17 @@
+# Build the image with host networking (bridge has no outbound access):
+#   cd /workspace/src/sdk-python && \
+#   sudo docker build --network=host -f phantom-stack/Dockerfile \
+#     -t strands-sdk-python:dev --build-arg STRANDS_VERSION=0.0.0 .
+# Then start the dev container:
+#   cd phantom-stack && sudo docker-compose up -d
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        STRANDS_VERSION: ${STRANDS_VERSION:-0.0.0}
+    image: strands-sdk-python:dev
+    working_dir: /app
+    command: sleep infinity
