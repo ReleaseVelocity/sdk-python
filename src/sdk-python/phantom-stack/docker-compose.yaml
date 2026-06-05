@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+    image: sdk-python
+    container_name: sdk-python
+    environment:
+      # Dummy AWS creds so boto3/moto-based code can initialize without real creds.
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-west-2
+    working_dir: /app
+    command: sleep infinity
