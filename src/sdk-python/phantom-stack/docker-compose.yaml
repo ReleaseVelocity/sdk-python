@@ -1,0 +1,21 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    working_dir: /app
+    # Mount the live source tree so edits are reflected (editable install).
+    # Named volumes shield the container's build/egg-info and venv-managed dirs
+    # from the host bind mount.
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../tests_integ:/app/tests_integ
+    environment:
+      # Default AWS test credentials so boto3/moto-based tests don't probe real creds.
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-west-2
+    command: ["sleep", "infinity"]
