@@ -1,0 +1,15 @@
+services:
+  sdk:
+    image: strands-sdk-python:latest
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      args:
+        PKG_VERSION: "0.0.0"
+    container_name: strands-sdk-python
+    working_dir: /app
+    command: ["sleep", "infinity"]
+    environment:
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
