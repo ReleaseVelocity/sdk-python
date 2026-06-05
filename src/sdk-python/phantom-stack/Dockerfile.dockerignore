@@ -1,0 +1,11 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+phantom-stack
+src/sdk-python
