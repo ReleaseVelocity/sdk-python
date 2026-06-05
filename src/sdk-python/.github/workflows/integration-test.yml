@@ -9,6 +9,18 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip integration tests for Dependabot PRs and PRs from forks. In those
+    # contexts the `pull_request_target` event does not expose repository
+    # Actions secrets (e.g. `STRANDS_INTEG_TEST_ROLE`) nor the elevated
+    # `id-token: write` permission, causing
+    # `aws-actions/configure-aws-credentials` to fail with empty inputs.
+    # The `merge_group` event has no `pull_request` payload, so we allow it
+    # through unconditionally; only same-repo `pull_request_target` events
+    # from non-Dependabot actors are permitted.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       id-token: write
       pull-requests: read
