@@ -1,0 +1,12 @@
+# Build context is the project root. Exclude noise and the nested duplicate tree.
+src/sdk-python/
+phantom-stack/
+**/__pycache__/
+**/*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+build/
+dist/
+.DS_Store
