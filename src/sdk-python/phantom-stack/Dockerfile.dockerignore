@@ -1,0 +1,11 @@
+.git
+**/__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+build
+dist
+*.egg-info
+src/sdk-python
+phantom-stack
