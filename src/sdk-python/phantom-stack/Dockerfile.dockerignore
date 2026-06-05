@@ -1,0 +1,12 @@
+# Override: we WANT the full source at runtime. Only exclude heavy/irrelevant
+# build artifacts and caches.
+**/__pycache__
+**/*.pyc
+.venv
+build
+dist
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage*
+phantom-stack
