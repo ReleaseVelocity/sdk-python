@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    environment:
+      # hatch-vcs has no git tags available in this tree.
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Avoid real AWS calls; tests use moto to mock AWS services.
+      AWS_DEFAULT_REGION: "us-east-1"
+      AWS_ACCESS_KEY_ID: "testing"
+      AWS_SECRET_ACCESS_KEY: "testing"
+    working_dir: /app
+    command: ["sleep", "infinity"]
