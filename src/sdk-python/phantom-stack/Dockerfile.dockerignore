@@ -1,0 +1,12 @@
+# Exclude the phantom-stack tooling from the build context
+phantom-stack
+# Exclude the nested duplicate package tree (src/sdk-python/...) to keep context small
+src/sdk-python
+# Common noise
+**/__pycache__
+**/*.pyc
+.git
+build
+dist
+*.egg-info
+.venv
