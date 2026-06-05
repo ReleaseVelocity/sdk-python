@@ -8,12 +8,30 @@ on:
 
 jobs:
   check-access-and-checkout:
+    # Skip for Dependabot PRs: pull_request_target runs from the base repo, but
+    # GitHub does not expose Actions secrets to Dependabot-triggered runs (Dependabot
+    # has its own secret scope). With no role secret available, OIDC cannot proceed
+    # and aws-actions/configure-aws-credentials retries for ~3 minutes before failing.
+    # Skipping fast keeps the check non-blocking and surfaces a clear reason.
+    if: github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Validate role secret is present
+        # Fail fast with a clear message if the role secret is empty (e.g. fork PR
+        # or misconfigured secret), instead of letting the AWS action retry 12 times
+        # over ~3 minutes against a missing role-to-assume input.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is empty or not available in this context. This typically happens for PRs from forks or Dependabot, which do not have access to repository Actions secrets."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
