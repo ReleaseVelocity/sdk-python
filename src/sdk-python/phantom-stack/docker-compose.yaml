@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: app
+    container_name: strands-sdk-python
+    environment:
+      - HATCH_VCS_PRETEND_VERSION=0.0.0+dev
+      # Dummy AWS creds so tests that touch boto3/moto have a region available.
+      - AWS_DEFAULT_REGION=us-west-2
+    working_dir: /app
+    command: sleep infinity
