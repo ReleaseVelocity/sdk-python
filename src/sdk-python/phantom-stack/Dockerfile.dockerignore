@@ -1,0 +1,12 @@
+# Keep the build context lean. These are not needed inside the dev container.
+**/__pycache__
+**/*.pyc
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+build
+dist
+.venv
+.env
+phantom-stack
