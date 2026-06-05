@@ -1,0 +1,11 @@
+# Override the project's exclusions; this dockerignore is used at build time.
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.mypy_cache
+**/.pytest_cache
+**/.ruff_cache
+build
+dist
+# Exclude the stray nested duplicate of the project to keep context small
+src/sdk-python
