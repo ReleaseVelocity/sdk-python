@@ -1,0 +1,13 @@
+# Exclude the large nested duplicate tree (not part of the wheel build).
+src/sdk-python
+# Common noise
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+phantom-stack
