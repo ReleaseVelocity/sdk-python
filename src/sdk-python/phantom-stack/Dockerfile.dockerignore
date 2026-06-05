@@ -1,0 +1,11 @@
+# Exclude the duplicated/mirrored nested tree to keep the context lean.
+src/sdk-python
+# Build/venv caches
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+.venv
+build
+dist
+.git
