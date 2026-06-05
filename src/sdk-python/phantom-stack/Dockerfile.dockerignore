@@ -1,0 +1,14 @@
+# Exclude the nested duplicate project tree (git artifact) to keep context small.
+src/sdk-python/
+# Common Python / build artifacts
+**/__pycache__/
+**/*.pyc
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+.coverage*
+phantom-stack/
+.git/
