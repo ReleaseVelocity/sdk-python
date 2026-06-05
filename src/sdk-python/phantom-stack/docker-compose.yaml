@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    working_dir: /app
+    environment:
+      - LOG_LEVEL=DEBUG
+      - SETUPTOOLS_SCM_PRETEND_VERSION=0.0.0+dev
+    # Keep the container alive so a developer can exec in and run tests/linters.
+    command: ["sleep", "infinity"]
