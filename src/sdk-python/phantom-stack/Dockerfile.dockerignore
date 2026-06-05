@@ -1,0 +1,13 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+.coverage*
+# Nested duplicate source tree inside the repo; not needed for the install.
+src/sdk-python
+phantom-stack
