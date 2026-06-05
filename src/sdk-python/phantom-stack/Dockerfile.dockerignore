@@ -1,0 +1,14 @@
+# Build context is the project root (..). Exclude cruft and the phantom-stack
+# dir itself, but keep src/strands and tests.
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
+# Nested duplicate checkout that is not part of the strands package.
+src/sdk-python
