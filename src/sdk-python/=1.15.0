@@ -1,0 +1,4 @@
+mise ERROR No version is set for shim: pip
+Set a global default version with one of the following:
+mise use -g python@3.10.20
+mise ERROR Run with --verbose or MISE_VERBOSE=1 for more information
