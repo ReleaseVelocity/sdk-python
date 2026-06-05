@@ -1,0 +1,58 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    # Bind the job to the `manual-approval` GitHub Environment so that
+    # environment-scoped secrets (notably STRANDS_INTEG_TEST_ROLE) are injected
+    # into the run. For `pull_request_target` triggered by Dependabot/forks,
+    # repository secrets are not exposed by default; the manual-approval
+    # environment both releases the secret post-approval and enforces the
+    # approval gate before AWS credentials are used.
+    environment: manual-approval
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify required secrets are present
+        # Fail fast with a clear message instead of letting
+        # configure-aws-credentials retry 12 times (~60s) on an empty role ARN.
+        if: ${{ secrets.STRANDS_INTEG_TEST_ROLE == '' }}
+        run: |
+          echo "::error::Missing STRANDS_INTEG_TEST_ROLE secret. Ensure it is configured on the 'manual-approval' environment (or as a Dependabot secret for Dependabot PRs)."
+          exit 1
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
