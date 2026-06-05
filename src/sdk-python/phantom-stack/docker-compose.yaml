@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+    image: sdk-python:latest
+    container_name: sdk-python
+    environment:
+      - HATCH_VCS_PRETEND_VERSION=0.0.0
+      - LOG_LEVEL=DEBUG
+      # Dummy AWS creds so boto3 clients can be constructed in tests if needed.
+      - AWS_DEFAULT_REGION=us-west-2
+    working_dir: /app
+    command: ["sleep", "infinity"]
