@@ -1,0 +1,12 @@
+.git
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+.venv
+.coverage*
+# Exclude the nested duplicate tree to keep the context small.
+src/sdk-python
