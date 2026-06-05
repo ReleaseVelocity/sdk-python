@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python
+    working_dir: /app
+    environment:
+      # Test fixtures (moto) expect dummy AWS credentials / region.
+      AWS_ACCESS_KEY_ID: testing
+      AWS_SECRET_ACCESS_KEY: testing
+      AWS_DEFAULT_REGION: us-west-2
+    command: sleep infinity
