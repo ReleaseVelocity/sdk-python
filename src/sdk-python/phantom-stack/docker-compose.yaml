@@ -1,0 +1,18 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    working_dir: /app
+    environment:
+      # Avoid real AWS credentials being required; tests use moto mocks.
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    volumes:
+      # Mount source for live development while keeping installed deps intact.
+      - ..:/app
+    command: ["sleep", "infinity"]
