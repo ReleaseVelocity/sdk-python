@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python
+    container_name: strands-sdk-python
+    working_dir: /app
+    environment:
+      # Provide deterministic version for hatch-vcs at runtime too.
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0+dev"
+      # Dummy AWS creds so boto3-based tests/imports don't probe the metadata service.
+      AWS_DEFAULT_REGION: "us-west-2"
+    command: sleep infinity
