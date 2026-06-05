@@ -1,0 +1,13 @@
+# Exclude the nested duplicate project copy and caches/build artifacts to keep
+# the build context small. The real package lives in ./src/strands and ./tests.
+src/sdk-python
+**/__pycache__
+**/*.pyc
+.git
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
