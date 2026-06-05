@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-agents-sdk:dev
+    working_dir: /app
+    environment:
+      # Avoid hatch-vcs failing on missing git metadata at runtime tooling.
+      HATCH_VCS_PRETEND_VERSION: "0.0.0"
+      # Default AWS test creds so moto-backed tests run without real creds.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    command: ["sleep", "infinity"]

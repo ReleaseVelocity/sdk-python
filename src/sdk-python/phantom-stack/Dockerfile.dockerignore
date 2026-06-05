@@ -1,0 +1,15 @@
+# Exclude the nested duplicate project tree (src/sdk-python/...) which is a
+# full copy of the repo and is not part of the installable package.
+src/sdk-python/
+
+# Standard cruft
+**/__pycache__/
+**/*.pyc
+.git/
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+.coverage*
