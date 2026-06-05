@@ -1,0 +1,10 @@
+# Keep build context lean; project source is copied explicitly in the Dockerfile.
+phantom-stack
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+.venv
