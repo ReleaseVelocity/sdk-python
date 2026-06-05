@@ -9,11 +9,27 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Reference the GitHub Environment that owns STRANDS_INTEG_TEST_ROLE so the
+    # environment-scoped secret is exposed to this job. Without this, the secret
+    # resolves to an empty string at runtime and aws-actions/configure-aws-credentials
+    # fails with "Could not load credentials from any providers" because the
+    # role-to-assume input is missing.
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is not set for this job."
+            echo "Ensure the secret is defined at the repository or 'manual-approval' environment scope."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
