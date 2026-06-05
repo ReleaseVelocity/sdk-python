@@ -1,0 +1,16 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    working_dir: /app
+    environment:
+      # Tests use moto-mocked AWS; provide dummy creds/region so boto3 init
+      # never reaches the network.
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-west-2"
+    # Keep the container alive for `docker-compose exec` development use.
+    command: ["sleep", "infinity"]
