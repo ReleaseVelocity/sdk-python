@@ -1,0 +1,12 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
+# Nested duplicate tree that is not part of the installable package
+src/sdk-python
