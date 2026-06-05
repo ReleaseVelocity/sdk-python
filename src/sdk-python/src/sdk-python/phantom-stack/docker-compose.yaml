@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    environment:
+      # Provide a deterministic version since the build context has no .git.
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Dummy AWS creds so boto3/moto-based tests have a default region/creds.
+      AWS_DEFAULT_REGION: "us-west-2"
+    working_dir: /app
+    command: ["sleep", "infinity"]
