@@ -1,0 +1,7 @@
+# Avoid copying the recursive nested project copy and VCS/build artifacts.
+src/sdk-python/
+**/__pycache__/
+**/*.pyc
+.git/
+build/
+phantom-stack/
