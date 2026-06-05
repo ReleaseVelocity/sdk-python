@@ -1,0 +1,12 @@
+# Override exclusions at runtime; keep build context lean.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+src/sdk-python
+phantom-stack
+.mypy_cache
+.pytest_cache
+.ruff_cache
