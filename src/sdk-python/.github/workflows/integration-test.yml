@@ -9,11 +9,23 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are configured
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is empty or not configured."
+            echo "::error::Ensure the secret is defined in the 'manual-approval' GitHub environment"
+            echo "::error::and that this job declares 'environment: manual-approval' so the secret is injected."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
