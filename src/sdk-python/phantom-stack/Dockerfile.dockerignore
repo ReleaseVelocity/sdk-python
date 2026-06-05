@@ -1,0 +1,13 @@
+# Build context is the project root (parent of phantom-stack).
+# Exclude the large nested duplicate copy and caches to speed up the build.
+src/sdk-python/
+**/__pycache__/
+**/*.pyc
+.git
+.venv
+build/
+dist/
+.mypy_cache
+.pytest_cache
+.ruff_cache
+phantom-stack/
