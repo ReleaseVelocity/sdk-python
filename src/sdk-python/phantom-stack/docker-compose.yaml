@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+      network: host
+    image: sdk-python:latest
+    container_name: sdk-python
+    environment:
+      # setuptools_scm pretend version (no git history available)
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
+      # Default region for boto3/moto-based tests
+      AWS_DEFAULT_REGION: "us-west-2"
+    command: ["tail", "-f", "/dev/null"]
