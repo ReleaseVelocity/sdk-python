@@ -1,0 +1,11 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    working_dir: /app
+    command: sleep infinity
+    environment:
+      SETUPTOOLS_SCM_PRETEND_VERSION: "0.0.0"
