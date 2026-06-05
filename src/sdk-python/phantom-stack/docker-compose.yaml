@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: sdk-python
+    image: sdk-python:dev
+    environment:
+      # AWS credentials used by moto-mocked tests; harmless defaults.
+      AWS_DEFAULT_REGION: us-west-2
+      HATCH_VCS_PRETEND_VERSION: 0.0.0+dev
+    working_dir: /app
+    command: ["sleep", "infinity"]
