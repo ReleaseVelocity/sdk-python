@@ -1,0 +1,70 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Verify integ-test role secret is available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Secret STRANDS_INTEG_TEST_ROLE is empty or not exposed to this workflow run."
+            echo "This causes aws-actions/configure-aws-credentials to fall back to the default"
+            echo "credential provider chain, retry 12 times, and fail with:"
+            echo "  'Could not load credentials from any providers.'"
+            echo ""
+            echo "Likely causes and remediation:"
+            echo "  1. The repository/organization secret STRANDS_INTEG_TEST_ROLE is missing or empty."
+            echo "     -> Set it in Settings -> Secrets and variables -> Actions to the integ-test"
+            echo "        IAM role ARN."
+            echo "  2. This run was triggered by a Dependabot PR or a fork-originated"
+            echo "     pull_request_target event, in which case GitHub intentionally withholds"
+            echo "     repository secrets."
+            echo "     -> Either grant Dependabot access (Settings -> Secrets and variables ->"
+            echo "        Dependabot) or gate this job behind a GitHub Environment that holds the"
+            echo "        secret and requires reviewer approval for external-contributor PRs."
+            echo "  3. If the role ARN is correct but assumption still fails, verify the IAM role's"
+            echo "     trust policy allows GitHub OIDC (token.actions.githubusercontent.com) for"
+            echo "     this repository and the relevant sub claims."
+            exit 1
+          fi
+          echo "STRANDS_INTEG_TEST_ROLE is set; proceeding with AWS credential configuration."
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
