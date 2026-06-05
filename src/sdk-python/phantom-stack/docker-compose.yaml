@@ -1,0 +1,17 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    container_name: strands-sdk-python
+    working_dir: /app
+    environment:
+      # hatch-vcs needs a version since the build context has no git tags.
+      HATCH_VCS_PRETEND_VERSION: "0.0.0.dev0"
+      # Avoid any accidental real AWS/network calls during unit tests; tests use moto.
+      AWS_DEFAULT_REGION: "us-east-1"
+    # Keep the container alive so a developer can exec in and run tests/linters.
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin_open: true
