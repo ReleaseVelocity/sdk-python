@@ -14,6 +14,20 @@ jobs:
       pull-requests: read
       contents: read
     steps:
+      - name: Verify required secrets are present
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is missing or empty."
+            echo "This workflow requires the STRANDS_INTEG_TEST_ROLE secret to be set."
+            echo "If this run was triggered from a Dependabot PR, the secret must also be"
+            echo "mirrored under Settings -> Secrets and variables -> Dependabot, since"
+            echo "repository Actions secrets are not exposed to Dependabot-triggered workflows."
+            echo "Otherwise, verify the secret is set under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
