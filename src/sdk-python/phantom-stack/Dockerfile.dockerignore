@@ -1,0 +1,11 @@
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+# Nested duplicated source tree (not part of the real project layout)
+src/sdk-python
+phantom-stack
