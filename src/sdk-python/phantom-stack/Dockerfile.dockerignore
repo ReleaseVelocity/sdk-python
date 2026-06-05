@@ -1,0 +1,16 @@
+# Exclude VCS, caches, build artifacts, and the accidental nested duplicate tree
+.git
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+*.egg-info
+.venv
+.coverage*
+# Nested duplicated source tree that is not part of the real package
+src/sdk-python
+# This Docker setup directory itself
+phantom-stack
