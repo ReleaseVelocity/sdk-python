@@ -1,0 +1,14 @@
+services:
+  sdk-python:
+    container_name: sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python:dev
+    working_dir: /app
+    volumes:
+      # Mount the live source for development; the editable install picks up
+      # changes immediately. The git metadata stays in the image layer.
+      - ../src:/app/src
+      - ../tests:/app/tests
+    command: ["sleep", "infinity"]
