@@ -1,0 +1,14 @@
+# Build context excludes for the phantom-stack build.
+# Keep the build lean but DO NOT exclude src/, tests/, pyproject.toml or README.md
+# which are required for the editable install and pytest collection.
+**/__pycache__
+**/*.pyc
+.git
+.venv
+build
+dist
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+phantom-stack
