@@ -1,0 +1,12 @@
+# Build context hygiene for the phantom-stack image.
+# This file is referenced explicitly; it does not modify the project's own ignores.
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage*
+build
+dist
+.venv
+.git
