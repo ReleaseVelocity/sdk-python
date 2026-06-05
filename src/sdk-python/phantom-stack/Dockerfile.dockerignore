@@ -1,0 +1,9 @@
+# Override the project's .gitignore-based exclusions for the Docker build context.
+# We need the full source tree at build time.
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/build
+phantom-stack
