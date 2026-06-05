@@ -1,0 +1,12 @@
+.git
+**/__pycache__
+**/*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+build
+dist
+phantom-stack
+# Nested duplicate copy of the project tree; not needed for the build.
+src/sdk-python
