@@ -1,0 +1,13 @@
+services:
+  sdk-python:
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    container_name: strands-sdk-python
+    image: strands-sdk-python:dev
+    working_dir: /app
+    environment:
+      HATCH_VCS_PRETEND_VERSION: "0.0.0.dev0"
+      # AWS region default so boto3-based tests/imports don't complain
+      AWS_DEFAULT_REGION: "us-east-1"
+    command: tail -f /dev/null
