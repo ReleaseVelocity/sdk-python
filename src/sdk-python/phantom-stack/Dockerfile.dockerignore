@@ -1,0 +1,15 @@
+# Keep the build context small and avoid the nested duplicate copy.
+src/sdk-python
+docs
+.github
+*.md
+!README.md
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+build
+dist
+.venv
+phantom-stack
