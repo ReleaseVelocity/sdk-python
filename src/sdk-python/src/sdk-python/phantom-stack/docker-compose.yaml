@@ -1,0 +1,9 @@
+services:
+  app:
+    container_name: sdk-python-app
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: sdk-python-app
+    working_dir: /app
+    command: ["sleep", "infinity"]
