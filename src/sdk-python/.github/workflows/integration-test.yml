@@ -9,11 +9,33 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Bind the job to the `manual-approval` GitHub Environment so that
+    # environment-scoped secrets (notably STRANDS_INTEG_TEST_ROLE and
+    # STRANDS_TEST_API_KEYS_SECRET_NAME) are available to runs triggered
+    # from `pull_request_target` — including those originating from
+    # Dependabot branches, which would otherwise not have access to
+    # repository-scoped Actions secrets. This also gives the
+    # manual-approval gate teeth for fork PRs.
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
       contents: read
     steps:
+      # Defensive guard: surface a clear, actionable error in 2 seconds
+      # if the role secret did not resolve in this run's context, instead
+      # of waiting ~80 seconds for `configure-aws-credentials` to exhaust
+      # its 12 internal retries with a confusing
+      # "Could not load credentials from any providers" message.
+      - name: Validate required secrets are available
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::STRANDS_INTEG_TEST_ROLE secret is not available in this context. Verify the secret is configured on the 'manual-approval' GitHub Environment (Settings -> Environments -> manual-approval -> Environment secrets), and that this job declares 'environment: manual-approval'."
+            exit 1
+          fi
+
       - name: Configure Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
