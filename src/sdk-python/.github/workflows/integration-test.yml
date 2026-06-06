@@ -9,6 +9,25 @@ on:
 jobs:
   check-access-and-checkout:
     runs-on: ubuntu-latest
+    # Skip this job for untrusted PRs (forks and Dependabot). GitHub strips
+    # `id-token: write` and access to repository secrets for those triggers,
+    # which makes the OIDC credential step below fail with
+    # "Could not load credentials from any providers". Running through the
+    # `manual-approval` environment requires a maintainer to approve before
+    # the credentialed step executes.
+    #
+    # - For `merge_group` runs the head_repository is empty, so we treat them
+    #   as trusted (they only run after PRs have merged into the queue).
+    # - For `pull_request_target`, only allow same-repo PRs that are not from
+    #   the Dependabot bot. Forked PRs and Dependabot PRs are skipped here and
+    #   should be exercised via a separate, manually-approved workflow.
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'pull_request_target' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.actor != 'dependabot[bot]' &&
+       github.event.pull_request.user.login != 'dependabot[bot]')
+    environment: manual-approval
     permissions:
       id-token: write
       pull-requests: read
