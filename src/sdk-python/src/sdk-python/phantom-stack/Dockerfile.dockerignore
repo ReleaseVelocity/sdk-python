@@ -1,0 +1,13 @@
+.git
+phantom-stack
+build
+dist
+__pycache__
+*.pyc
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage*
+# Nested duplicate source tree that is not the real package
+src/sdk-python
