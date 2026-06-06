@@ -1,0 +1,15 @@
+services:
+  sdk-python:
+    container_name: strands-sdk-python
+    build:
+      context: ..
+      dockerfile: phantom-stack/Dockerfile
+    image: strands-sdk-python:dev
+    working_dir: /app
+    # Mount the source so edits on the host are reflected in the editable install.
+    volumes:
+      - ..:/app
+    environment:
+      AWS_DEFAULT_REGION: us-west-2
+      LOG_LEVEL: INFO
+    command: sleep infinity
