@@ -1,0 +1,22 @@
+.DS_Store
+build
+__pycache__*
+.coverage*
+.env
+.venv
+.mypy_cache
+.pytest_cache
+.ruff_cache
+*.bak
+.vscode
+dist
+repl_state
+.kiro
+uv.lock
+.audio_cache
+
+# Guard against accidental nested duplicate of the repository tree under src/.
+# A previous regression committed an entire copy of the repo to src/sdk-python/,
+# which broke mypy with a "Duplicate module named 'strands'" error. Ignore that
+# path so the same accident cannot re-enter the working tree silently.
+/src/sdk-python/
