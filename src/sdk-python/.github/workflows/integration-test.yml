@@ -1,0 +1,62 @@
+name: Secure Integration test
+
+on:
+  pull_request_target:
+    branches: [main, 'base-*']
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  check-access-and-checkout:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: read
+    steps:
+      - name: Check required secrets
+        # Repository Actions secrets are not exposed to workflow runs triggered
+        # by Dependabot (and may be unavailable for other forked-actor contexts)
+        # unless explicitly added under "Dependabot secrets" or otherwise
+        # configured. When the secret expression resolves to an empty string,
+        # `aws-actions/configure-aws-credentials` silently drops `role-to-assume`
+        # and falls back to the default credential provider chain, producing a
+        # misleading "Could not load credentials from any providers" error after
+        # 12 retries. Fail fast here with a clear, actionable message instead.
+        env:
+          STRANDS_INTEG_TEST_ROLE: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+        run: |
+          if [ -z "${STRANDS_INTEG_TEST_ROLE}" ]; then
+            echo "::error::Required secret STRANDS_INTEG_TEST_ROLE is not available to this workflow run."
+            echo "::error::This typically happens for pull_request_target runs triggered by Dependabot or other actors that do not have access to repository Actions secrets."
+            echo "::error::Fix: add STRANDS_INTEG_TEST_ROLE under Settings -> Secrets and variables -> Dependabot, or grant the triggering context access to GitHub Actions secrets."
+            exit 1
+          fi
+
+      - name: Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+         role-to-assume: ${{ secrets.STRANDS_INTEG_TEST_ROLE }}
+         aws-region: us-east-1
+         mask-aws-account-id: true
+
+      - name: Checkout head commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          pip install --no-cache-dir hatch 'virtualenv<21'
+      - name: Run integration tests
+        env:
+          AWS_REGION: us-east-1
+          AWS_REGION_NAME: us-east-1
+          STRANDS_TEST_API_KEYS_SECRET_NAME: ${{ secrets.STRANDS_TEST_API_KEYS_SECRET_NAME }}
+        id: tests
+        run: |
+          hatch test tests_integ
